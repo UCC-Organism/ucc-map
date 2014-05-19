@@ -131,6 +131,9 @@ Window.create({
     this.rotationParam = this.gui.addParam('Rotation', this.panner, 'rotation', { min: 0, max: 360 }, function(e) {
       this.panner.updateCameraRotation();
     }.bind(this));
+    this.distanceParam = this.gui.addParam('Distance', this.panner, 'distance', { min: 0, max: 5 }, function(e) {
+      this.panner.updateCamera();
+    }.bind(this));
     this.gui.load('data/settings.json');
     this.onFocusLayerChange(this.focusLayerId);
     this.panner.updateCameraRotation();
@@ -203,7 +206,7 @@ Window.create({
     this.focusLayerId = layerIndex;
     this.gui.items[0].dirty = true;
 
-    this.gui.save('data/settings.json');
+    //this.gui.save('data/settings.json');
   },
   draw: function() {
     for (var i=0; i<this.layers.length; i++) {

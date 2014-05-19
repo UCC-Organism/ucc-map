@@ -13,8 +13,8 @@ function Panner(window, camera, distance) {
   this.dragCenter = new Vec3();
   this.dragStart = new Vec3();
   this.dragDelta = new Vec3();
-  this.dragStartCameraUp = new Vec3();
-  this.dragStartCameraRight = new Vec3();
+  this.dragStartCameraUp = new Vec3(0, 0, 1);
+  this.dragStartCameraRight = new Vec3(1, 0, 0);
   this.up = null;
   this.rotation = 0;
   this.dragRotationBaseAngle = 0;
@@ -55,8 +55,6 @@ Panner.prototype.down = function(x, y, e) {
   this.dragStart.setVec3(hits[0]);
   this.dragDelta.asSub(hits[0], this.dragCenter);
   this.dragRotationInit = false;
-  this.dragStartCameraUp.setVec3(this.camera.getUp());
-  this.dragStartCameraRight.asCross(this.dragStartCameraUp, this.up); // up x forward
   this.updateCamera();
 }
 
@@ -73,14 +71,16 @@ Panner.prototype.drag = function(x, y, e) {
   if (e.option) {
     this.dragDelta.asSub(hits[0], this.camera.getTarget());
     var radians = Math.atan2(-(y - this.window.height/2), x - this.window.width/2);
-    var angle = Math.floor(radians*180/Math.PI);
+    var angle = -Math.floor(radians*180/Math.PI) + 180;
     if (!this.dragRotationInit) {
       this.dragRotationInit = true;
       this.dragRotationBaseAngle = angle;//rotateAngleBase;
+      this.baseRotation = this.rotation;
     }
     var dragRotationDiffAngle = angle - this.dragRotationBaseAngle;
-    this.rotation = dragRotationDiffAngle;
-    this.rotation = (this.rotation + 360 + 90) % 360;
+    //this.rotation = dragRotationDiffAngle;
+    //this.rotation = (this.rotation + 360 + 90) % 360;
+    this.rotation = this.baseRotation + dragRotationDiffAngle;
     this.updateCameraRotation();
   }
 }
@@ -97,18 +97,12 @@ Panner.prototype.updateCamera = function() {
 Panner.prototype.updateCameraRotation = function() {
   var u = Math.cos((this.rotation)/ 180 * Math.PI);
   var v = Math.sin((this.rotation)/ 180 * Math.PI);
-  if (!this.dragStartCameraRight || this.dragStartCameraRight.length() == 0) {
-    this.dragStartCameraRight.set(0, 1, 0);
-    this.dragStartCameraUp.set(0, 0, -1);
-  }
-  console.log(this.dragStartCameraRight.toString() + ' ' + this.dragStartCameraUp.toString());
+
   var newUp = new Vec3(
     this.dragStartCameraRight.x * u + this.dragStartCameraUp.x * v,
     this.dragStartCameraRight.y * u + this.dragStartCameraUp.y * v,
     this.dragStartCameraRight.z * u + this.dragStartCameraUp.z * v
   ).normalize();
-
-  console.log(newUp);
 
   this.camera.setUp(newUp);
 }
