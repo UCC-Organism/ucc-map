@@ -10,26 +10,15 @@ function Panner(window, camera, distance) {
   this.distance = distance || 2;;
   this.minDistance = distance*0.025 || 0.025;;
   this.maxDistance = distance*2 || 5;;
-  this.clickPos = new Vec2(0, 0);
-  this.dragDiff = new Vec2(0, 0);
-  this.panScale = 0.01;
-  this.upAxis = new Vec3(0, 0, 0);
-  this.forwardAxis = new Vec3(0, 0, 0);
-  this.rightAxis = new Vec3(0, 0, 0);
-  this.cameraClickPos = new Vec3(0, 0, 0);
-  this.cameraClickTarget = new Vec3(0, 0, 0);
   this.dragCenter = new Vec3();
   this.dragStart = new Vec3();
   this.dragDelta = new Vec3();
-  this.dragScale = new Vec3();
   this.dragStartCameraUp = new Vec3();
   this.dragStartCameraRight = new Vec3();
   this.up = null;
-  this.cameraUp = new Vec3();
   this.rotation = 0;
   this.dragRotationBaseAngle = 0;
   this.dragRotationInit = false;
-  this.dragRotationStartAngle = 0;
   this.dragging = false;
 
   this.addEventHanlders();
@@ -68,6 +57,7 @@ Panner.prototype.down = function(x, y, e) {
   this.dragRotationInit = false;
   this.dragStartCameraUp.setVec3(this.camera.getUp());
   this.dragStartCameraRight.asCross(this.dragStartCameraUp, this.up); // up x forward
+  this.updateCamera();
 }
 
 Panner.prototype.drag = function(x, y, e) {
@@ -88,16 +78,10 @@ Panner.prototype.drag = function(x, y, e) {
       this.dragRotationInit = true;
       this.dragRotationBaseAngle = angle;//rotateAngleBase;
     }
-    dragRotationDiffAngle = angle - this.dragRotationBaseAngle;
-    this.rotation = this.dragRotationStartAngle + dragRotationDiffAngle;
-    var u = Math.cos((this.rotation + 90)/ 180 * Math.PI);
-    var v = Math.sin((this.rotation + 90)/ 180 * Math.PI);
-    var newUp = new Vec3(
-      this.dragStartCameraRight.x * u +  this.dragStartCameraUp.x * v,
-      this.dragStartCameraRight.y * u +  this.dragStartCameraUp.y * v,
-      this.dragStartCameraRight.z * u +  this.dragStartCameraUp.z * v
-    ).normalize();
-    this.camera.setUp(newUp);
+    var dragRotationDiffAngle = angle - this.dragRotationBaseAngle;
+    this.rotation = dragRotationDiffAngle;
+    this.rotation = (this.rotation + 360 + 90) % 360;
+    this.updateCameraRotation();
   }
 }
 
@@ -105,8 +89,28 @@ Panner.prototype.updateCamera = function() {
   if (!this.up) {
     this.up = Vec3.create().asSub(this.camera.getPosition(), this.camera.getTarget()).normalize();
   }
+
   this.camera.getPosition().setVec3(this.up).scale(this.distance).add(this.camera.getTarget());
   this.camera.updateMatrices();
+}
+
+Panner.prototype.updateCameraRotation = function() {
+  var u = Math.cos((this.rotation)/ 180 * Math.PI);
+  var v = Math.sin((this.rotation)/ 180 * Math.PI);
+  if (!this.dragStartCameraRight || this.dragStartCameraRight.length() == 0) {
+    this.dragStartCameraRight.set(0, 1, 0);
+    this.dragStartCameraUp.set(0, 0, -1);
+  }
+  console.log(this.dragStartCameraRight.toString() + ' ' + this.dragStartCameraUp.toString());
+  var newUp = new Vec3(
+    this.dragStartCameraRight.x * u + this.dragStartCameraUp.x * v,
+    this.dragStartCameraRight.y * u + this.dragStartCameraUp.y * v,
+    this.dragStartCameraRight.z * u + this.dragStartCameraUp.z * v
+  ).normalize();
+
+  console.log(newUp);
+
+  this.camera.setUp(newUp);
 }
 
 

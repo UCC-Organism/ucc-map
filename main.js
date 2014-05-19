@@ -34,6 +34,8 @@ Window.create({
   enableLayerEditing: false,
   showPlans: true,
   init: function() {
+    //has to be here to capture events before others
+    this.gui = new GUI(this);
     this.camera = new PerspectiveCamera(60, this.width / this.height, 0.01, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1));
     geom.randomSeed(0);
     this.initLayers();
@@ -120,11 +122,23 @@ Window.create({
     this.panner.enabled = false;
   },
   initGUI: function() {
-    this.gui = new GUI(this);
     this.gui.addLabel('x - xray mode');
     this.gui.addParam('show plans', this, 'showPlans');
     this.gui.addRadioList('Focus on', this, 'focusLayerId', this.layerInfo, function(e) {
       this.onFocusLayerChange(e);
+    }.bind(this));
+    this.gui.addHeader('Panner');
+    this.rotationParam = this.gui.addParam('Rotation', this.panner, 'rotation', { min: 0, max: 360 }, function(e) {
+      this.panner.updateCameraRotation();
+    }.bind(this));
+    this.gui.load('data/settings.json');
+    this.onFocusLayerChange(this.focusLayerId);
+    this.panner.updateCameraRotation();
+
+    this.on('keyDown', function(e) {
+      switch (e.str) {
+        case 'S': this.gui.save('data/settings.json'); console.log('GUI saved', this.panner.rotation); break;
+      }
     }.bind(this));
   },
   initKeyboard: function() {
@@ -161,7 +175,6 @@ Window.create({
           break;
       }
     });
-    this.onFocusLayerChange(0);
   },
   onFocusLayerChange: function(layerIndex) {
     for (var i=0; i<this.scene.length; i++) {
@@ -180,7 +193,6 @@ Window.create({
       this.camera.setUp(new Vec3(0, 0, 1));
       this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
       this.camera.updateMatrices();
-      this.panner.cameraUp.setVec3(new Vec3(0, 0, 1));
     }
     if (this.panner.enabled) {
       this.panner.updateCamera();
@@ -190,6 +202,8 @@ Window.create({
     }
     this.focusLayerId = layerIndex;
     this.gui.items[0].dirty = true;
+
+    this.gui.save('data/settings.json');
   },
   draw: function() {
     for (var i=0; i<this.layers.length; i++) {
@@ -207,6 +221,8 @@ Window.create({
         item.draw(this.camera);
       }
     }.bind(this));
+    this.rotationParam.setNormalizedValue(this.panner.rotation/360);
+    this.rotationParam.dirty = true;
     glu.enableDepthReadAndWrite(false, false);
     this.nodeEditor.draw(this.camera);
     this.gui.draw();
