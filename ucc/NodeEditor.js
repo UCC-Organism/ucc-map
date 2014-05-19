@@ -15,6 +15,31 @@ var Vec2 = geom.Vec2;
 var Vec3 = geom.Vec3;
 var Plane = geom.Plane;
 var IO = sys.IO;
+var Geometry = geom.Geometry;
+
+function prop(name) {
+  return function(o) {
+    return o[name];
+  }
+}
+
+function centroid2D(points) {
+  var n = points.length;
+  var center = points.reduce(function(center, p) {
+    return center.add(p);
+  }, new Vec2(0, 0));
+  center.scale(1 / points.length);
+  return center;
+}
+
+function centroid3D(points) {
+  var n = points.length;
+  var center = points.reduce(function(center, p) {
+    return center.add(p);
+  }, new Vec3(0, 0));
+  center.scale(1 / points.length);
+  return center;
+}
 
 function NodesEditor(window, camera) {
   this.window = window;
@@ -22,6 +47,7 @@ function NodesEditor(window, camera) {
 
   this.normalColor = new Color(1.0, 0.2, 0.0, 1.0);
   this.selectedColor = new Color(0.0, 0.7, 1.0, 1.0);
+  this.roomColor = new Color(1.0, 0.2, 1.0, 1.0);
   this.currentLayer = null;
   this.enabled = false;
   this.nodes = [];
@@ -31,6 +57,8 @@ function NodesEditor(window, camera) {
   this.lineBuilder = new LineBuilder();
   this.lineBuilder.addLine(new Vec3(0, 0, 0), new Vec3(0, 0, 0), this.normalColor);
   this.lineMesh = new Mesh(this.lineBuilder, new ShowColors(), { lines: true});
+  this.roomsGeometry = new Geometry({ vertices: true, faces: true });
+  this.roomsMesh = new Mesh(this.roomsGeometry, new SolidColor({ color: new Color(1, 0, 1, 0.3) }));
 
   this.nodeRadius = 0.003;
   var cube = new Cube(this.nodeRadius, 0.0005, this.nodeRadius)
@@ -44,31 +72,51 @@ function NodesEditor(window, camera) {
 }
 
 NodesEditor.prototype.save = function(fileName) {
+  var self = this;
+  function serializeConnection(connection) {
+    return [ self.nodes.indexOf(connection.a), self.nodes.indexOf(connection.b) ];
+  }
+  function serializeRoom(room) {
+    return {
+      nodes: room.nodes.map(function(node) {
+        return self.nodes.indexOf(node);
+      })
+    }
+  }
   var data = {
    nodes: this.nodes,
-   connections: this.connections.map(function(c) { return [this.nodes.indexOf(c.a), this.nodes.indexOf(c.b)]; }.bind(this))
+   connections: this.connections.map(serializeConnection),
+   rooms: this.rooms.map(serializeRoom)
   };
   IO.saveTextFile(fileName, JSON.stringify(data));
 }
 
 NodesEditor.prototype.load = function(fileName) {
+  var self = this;
   IO.loadTextFile(fileName, function(data) {
     data = JSON.parse(data)
-    this.nodes = data.nodes.map(function(nodeData) {
+    self.nodes = data.nodes.map(function(nodeData) {
       return {
         layerId: nodeData.layerId,
         position: new Vec3(nodeData.position.x, nodeData.position.y, nodeData.position.z),
         position2d: new Vec2(nodeData.position2d.x, nodeData.position2d.y)
       }
     });
-    this.connections = data.connections.map(function(connectionData) {
+    self.connections = data.connections.map(function(connectionData) {
       return {
-        a: this.nodes[connectionData[0]],
-        b: this.nodes[connectionData[1]]
+        a: self.nodes[connectionData[0]],
+        b: self.nodes[connectionData[1]]
       };
-    }.bind(this));
-    this.updateConnectionsMesh()
-  }.bind(this));
+    });
+    self.rooms = data.rooms.map(function(roomData) {
+      return {
+        nodes: roomData.nodes.map(function(nodeIndex) {
+          return self.nodes[nodeIndex];
+        })
+      };
+    });
+    self.updateConnectionsMesh()
+  });
 }
 
 NodesEditor.prototype.addEventHanlders = function() {
@@ -144,6 +192,7 @@ NodesEditor.prototype.addEventHanlders = function() {
       this.draggedNode.position = hit3d;
       e.handled = true;
       this.updateConnectionsMesh();
+      this.updateRoomsMesh();
     }
   }.bind(this));
 
@@ -154,6 +203,8 @@ NodesEditor.prototype.addEventHanlders = function() {
       case 'L': this.load('data/nodes.txt'); break;
       case 'j': this.joinNodes(true); break;
       case 'J': this.joinNodes(false); break;
+      case 'r': this.makeRoom(true); break;
+      case 'R': this.makeRoom(false); break;
     }
     switch (e.keyCode) {
       case 51: this.deleteNodes(); break;
@@ -208,6 +259,48 @@ NodesEditor.prototype.joinNodes = function(connect) {
   }
 }
 
+NodesEditor.prototype.sortNodes = function(nodes) {
+  var connections = [];
+  for(var i=0; i<nodes.length; i++) {
+    for(var j=i+1; j<nodes.length; j++) {
+      var c = this.getConnection(nodes[i], nodes[j]);
+      if (c) connections.push(c);
+    }
+  }
+
+  if (connections.length == 0) return nodes;
+
+  var watchdog = 0;
+  var sortedNodes = [];
+  var c = connections.shift();
+  sortedNodes.push(c.a);
+  while(connections.length > 0 && watchdog++ < 100) {
+    var currNode = sortedNodes[sortedNodes.length-1];
+    for(var i=0; i<connections.length; i++) {
+      if (currNode == connections[i].a) {
+        sortedNodes.push(connections[i].b);
+        connections.splice(i, 1);
+        break;
+      }
+      else if (currNode == connections[i].b) {
+        sortedNodes.push(connections[i].a);
+        connections.splice(i, 1);
+        break;
+      }
+    }
+  }
+  return sortedNodes;
+}
+
+NodesEditor.prototype.makeRoom = function(connect) {
+  var selectedNodes = this.nodes.filter(function(node) { return node.selected; });
+  var sortedNodes = this.sortNodes(selectedNodes);
+  this.rooms.push({
+    nodes: sortedNodes
+  });
+  this.updateRoomsMesh();
+}
+
 NodesEditor.prototype.updateConnectionsMesh = function() {
   this.lineBuilder.reset();
   var currentLayerConnections = this.connections.filter(function(connection) {
@@ -218,9 +311,30 @@ NodesEditor.prototype.updateConnectionsMesh = function() {
   }.bind(this));
 }
 
+NodesEditor.prototype.updateRoomsMesh = function() {
+  this.roomsGeometry.vertices.length = 0;
+  this.roomsGeometry.faces.length = 0;
+  this.rooms.forEach(function(room) {
+    if (!this.currentLayer || !this.isNodeVisible(room.nodes[0])) return;
+    var center = centroid3D(room.nodes.map(prop('position')));
+    room.nodes.forEach(function(node, nodeIndex) {
+      var nextNode = room.nodes[(nodeIndex + 1) % room.nodes.length];
+      var i = this.roomsGeometry.vertices.length;
+      this.roomsGeometry.faces.push([i, i+1, i+2]);
+      this.roomsGeometry.vertices.push(node.position);
+      this.roomsGeometry.vertices.push(nextNode.position);
+      this.roomsGeometry.vertices.push(center);
+    }.bind(this));
+  }.bind(this));
+  this.roomsGeometry.vertices.dirty = true;
+  this.roomsGeometry.faces.dirty = true;
+
+}
+
 NodesEditor.prototype.setCurrentLayer = function(layer) {
   this.currentLayer = layer;
   this.updateConnectionsMesh();
+  this.updateRoomsMesh();
 }
 
 NodesEditor.prototype.isNodeVisible = function(node) {
@@ -231,6 +345,10 @@ NodesEditor.prototype.draw = function(camera) {
   if (this.lineBuilder.vertices.length > 0) {
     this.lineMesh.draw(camera);
   }
+
+  glu.enableAlphaBlending(true, true);
+  this.roomsMesh.draw(camera);
+  glu.enableBlending(false, false);
 
   this.wireCube.material.uniforms.color = this.normalColor;
   this.wireCube.drawInstances(camera, this.nodes.filter(function(node) { return !node.selected && this.isNodeVisible(node); }.bind(this) ));
