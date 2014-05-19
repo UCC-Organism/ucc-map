@@ -1,0 +1,30 @@
+[submodule "node_modules/pex-sys"]
+	path = node_modules/pex-sys
+	url = git@github.com:vorg/pex-sys
+[submodule "node_modules/pex-glu"]
+	path = node_modules/pex-glu
+	url = git@github.com:vorg/pex-glu
+[submodule "node_modules/pex-geom"]
+	path = node_modules/pex-geom
+	url = git@github.com:vorg/pex-geom
+[submodule "node_modules/pex-color"]
+	path = node_modules/pex-color
+	url = git@github.com:vorg/pex-color
+[submodule "node_modules/pex-materials"]
+	path = node_modules/pex-materials
+	url = git@github.com:vorg/pex-materials
+[submodule "node_modules/pex-typo"]
+	path = node_modules/pex-typo
+	url = git@github.com:vorg/pex-typo
+[submodule "node_modules/pex-fx"]
+	path = node_modules/pex-fx
+	url = git@github.com:vorg/pex-fx
+[submodule "node_modules/pex-gui"]
+	path = node_modules/pex-gui
+	url = git@github.com:vorg/pex-gui
+[submodule "node_modules/pex-gen"]
+	path = node_modules/pex-gen
+	url = git@github.com:vorg/pex-gen
+[submodule "node_modules/pex-helpers"]
+	path = node_modules/pex-helpers
+	url = git@github.com:vorg/pex-helpers
