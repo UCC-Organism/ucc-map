@@ -123,6 +123,7 @@ Window.create({
   },
   initGUI: function() {
     this.gui.addLabel('x - xray mode');
+    this.gui.addHeader('Layers');
     this.gui.addParam('show plans', this, 'showPlans');
     this.gui.addRadioList('Focus on', this, 'focusLayerId', this.layerInfo, function(e) {
       this.onFocusLayerChange(e);
@@ -140,7 +141,7 @@ Window.create({
 
     this.on('keyDown', function(e) {
       switch (e.str) {
-        case 'S': this.gui.save('data/settings.json'); console.log('GUI saved', this.panner.rotation); break;
+        case 'S': this.gui.save('data/settings.json'); break;
       }
     }.bind(this));
   },
@@ -149,7 +150,7 @@ Window.create({
       switch (e.str) {
         case 'x':
           this.xray = !this.xray;
-          this.layers.forEach(function() {
+          this.layers.forEach(function(layer) {
             layer.planeMesh.material.uniforms.xray = this.xray;
           }.bind(this));
           break;

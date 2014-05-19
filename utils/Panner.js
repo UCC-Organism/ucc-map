@@ -78,9 +78,8 @@ Panner.prototype.drag = function(x, y, e) {
       this.baseRotation = this.rotation;
     }
     var dragRotationDiffAngle = angle - this.dragRotationBaseAngle;
-    //this.rotation = dragRotationDiffAngle;
-    //this.rotation = (this.rotation + 360 + 90) % 360;
     this.rotation = this.baseRotation + dragRotationDiffAngle;
+    this.rotation = (this.rotation + 720) % 360;
     this.updateCameraRotation();
   }
 }
