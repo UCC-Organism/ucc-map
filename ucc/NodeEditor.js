@@ -17,6 +17,7 @@ var Plane = geom.Plane;
 var IO = sys.IO;
 var Geometry = geom.Geometry;
 var Triangle2D = geom.Triangle2D;
+var TextLabel = require('../utils/TextLabel');
 
 function prop(name) {
   return function(o) {
@@ -77,7 +78,9 @@ function NodesEditor(window, camera) {
   this.hoverRoom = null;
 
   this.addEventHanlders();
-  this.load('data/nodes.txt')
+  this.load('data/nodes.txt');
+
+  this.textLabels = [];
 }
 
 NodesEditor.prototype.save = function(fileName) {
@@ -87,6 +90,7 @@ NodesEditor.prototype.save = function(fileName) {
   }
   function serializeRoom(room) {
     return {
+      id: room.id,
       nodes: room.nodes.map(function(node) {
         return self.nodes.indexOf(node);
       })
@@ -119,6 +123,7 @@ NodesEditor.prototype.load = function(fileName) {
     });
     self.rooms = data.rooms.map(function(roomData) {
       return {
+        id: roomData.id,
         nodes: roomData.nodes.map(function(nodeIndex) {
           return self.nodes[nodeIndex];
         })
@@ -164,11 +169,21 @@ NodesEditor.prototype.addEventHanlders = function() {
     else if (this.hoverRoom) {
       this.rooms.filter(prop('selected')).forEach(function(room) {
         if (room != this.hoverRoom) room.selected = false;
-      })
+      }.bind(this));
       this.hoverRoom.selected = !this.hoverRoom.selected;
+      if (this.onRoomSelected) {
+        this.onRoomSelected(this.hoverRoom.selected ? this.hoverRoom : null)
+      }
       this.updateRoomsMesh();
     }
     else {
+      this.rooms.filter(prop('selected')).forEach(function(room) {
+        room.selected = false;
+        if (this.onRoomSelected) {
+          this.onRoomSelected(null)
+        }
+        this.updateRoomsMesh();
+      }.bind(this));
       var forward = this.camera.getTarget().dup().sub(this.camera.getPosition()).normalize();
       this.layerPlane = new Plane(this.currentLayer.position, forward);
       var ray = this.camera.getWorldRay(e.x, e.y, this.window.width, this.window.height);
@@ -202,6 +217,7 @@ NodesEditor.prototype.addEventHanlders = function() {
     var prevHoverRoom = this.hoverRoom;
     this.hoverRoom = false;
     this.rooms.forEach(function(room) {
+      if (room.nodes[0].layerId != this.currentLayer.id) return;
       var points2d = room.nodes.map(prop('position2d'));
       var center = centroid2D(points2d);
       var hit = false;
@@ -338,6 +354,7 @@ NodesEditor.prototype.makeRoom = function(connect) {
   var selectedNodes = this.nodes.filter(function(node) { return node.selected; });
   var sortedNodes = this.sortNodes(selectedNodes);
   this.rooms.push({
+    id: 'undefined',
     nodes: sortedNodes
   });
   this.updateRoomsMesh();
@@ -357,8 +374,13 @@ NodesEditor.prototype.updateRoomsMesh = function() {
   this.roomsGeometry.vertices.length = 0;
   this.roomsGeometry.faces.length = 0;
   this.roomsGeometry.colors.length = 0;
-  this.rooms.forEach(function(room) {
-    if (!this.currentLayer || !this.isNodeVisible(room.nodes[0])) return;
+
+  var roomsOnThisLevel = this.rooms.filter(function(room) {
+    if (!this.currentLayer || !this.isNodeVisible(room.nodes[0])) return false;
+    return true;
+  }.bind(this));
+
+  roomsOnThisLevel.forEach(function(room) {
     var center = centroid3D(room.nodes.map(prop('position')));
     room.nodes.forEach(function(node, nodeIndex) {
       var nextNode = room.nodes[(nodeIndex + 1) % room.nodes.length];
@@ -376,6 +398,16 @@ NodesEditor.prototype.updateRoomsMesh = function() {
   this.roomsGeometry.vertices.dirty = true;
   this.roomsGeometry.faces.dirty = true;
   this.roomsGeometry.colors.dirty = true;
+
+  this.textLabels.forEach(function(label) {
+    label.dispose();
+  });
+  this.textLabels.length = 0;
+  roomsOnThisLevel.forEach(function(room) {
+    var p2d = this.camera.getScreenPos(room.nodes[0].position, this.window.width, this.window.height);
+    var p3d = new Vec3(p2d.x, this.window.height - p2d.y, 0.0);
+    this.textLabels.push(new TextLabel(this.window, p3d, '' +room.id, 30));
+  }.bind(this));
 }
 
 NodesEditor.prototype.setCurrentLayer = function(layer) {
@@ -405,6 +437,20 @@ NodesEditor.prototype.draw = function(camera) {
   //for node in this.nodes
   //  this.wireCube.position = node.position
   //  this.wireCube.draw(camera, this.nodes)
+
+  var roomsOnThisLevel = this.rooms.filter(function(room) {
+    if (!this.currentLayer || !this.isNodeVisible(room.nodes[0])) return false;
+    return true;
+  }.bind(this));
+
+  this.textLabels.forEach(function(label, labelIndex) {
+    var center = centroid3D(roomsOnThisLevel[labelIndex].nodes.map(prop('position')));
+    var p2d = this.camera.getScreenPos(center, this.window.width, this.window.height);
+    var p3d = new Vec3(p2d.x, this.window.height - p2d.y, 0.0);
+    label.mesh.position = p3d;
+    label.meshBg.position = p3d;
+    label.draw();
+  }.bind(this));
 }
 
 

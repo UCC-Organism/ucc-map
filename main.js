@@ -33,6 +33,8 @@ Window.create({
   focusLayerId: 0,
   enableLayerEditing: false,
   showPlans: true,
+  selectedRoomId: 'N/A',
+  selectedRoom: null,
   init: function() {
     //has to be here to capture events before others
     this.gui = new GUI(this);
@@ -122,6 +124,7 @@ Window.create({
     this.panner.enabled = false;
   },
   initGUI: function() {
+    this.gui.addHeader('Keyboard');
     this.gui.addLabel('x - xray mode');
     this.gui.addHeader('Layers');
     this.gui.addParam('show plans', this, 'showPlans');
@@ -138,6 +141,15 @@ Window.create({
     this.gui.load('data/settings.json');
     this.onFocusLayerChange(this.focusLayerId);
     this.panner.updateCameraRotation();
+    this.gui.addHeader('Selected Room').setPosition(2*180, 20);
+    this.roomIdParam = this.gui.addParam('ID', this, 'selectedRoomId', {}, function(e) {
+      if (this.selectedRoom) {
+        this.selectedRoom.id = this.selectedRoomId;
+      }
+      else {
+        this.selectedRoomId = 'N/A';
+      }
+    }.bind(this));
 
     this.on('keyDown', function(e) {
       switch (e.str) {
@@ -147,6 +159,7 @@ Window.create({
   },
   initKeyboard: function() {
     this.on('keyDown', function(e) {
+      if (e.handled) return;
       switch (e.str) {
         case 'x':
           this.xray = !this.xray;
@@ -192,6 +205,15 @@ Window.create({
     this.panner.enabled = layerIndex !== 0;
     this.nodeEditor.enabled = layerIndex !== 0;
     this.nodeEditor.setCurrentLayer(this.layers[layerIndex]);
+    this.nodeEditor.onRoomSelected = function(room) {
+      this.selectedRoom = room;
+      if (room) {
+        this.selectedRoomId = '' + room.id;
+      }
+      else {
+        this.selectedRoomId = 'N/A';
+      }
+    }.bind(this);
     this.camera.getTarget().setVec3(selectedLayer.position);
     if (reorientCamera) {
       this.camera.setUp(new Vec3(0, 0, 1));
@@ -227,6 +249,7 @@ Window.create({
     }.bind(this));
     this.rotationParam.setNormalizedValue(this.panner.rotation/360);
     this.rotationParam.dirty = true;
+
     glu.enableDepthReadAndWrite(false, false);
     this.nodeEditor.draw(this.camera);
     this.gui.draw();
