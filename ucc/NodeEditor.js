@@ -16,6 +16,7 @@ var Vec3 = geom.Vec3;
 var Plane = geom.Plane;
 var IO = sys.IO;
 var Geometry = geom.Geometry;
+var Triangle2D = geom.Triangle2D;
 
 function prop(name) {
   return function(o) {
@@ -41,13 +42,20 @@ function centroid3D(points) {
   return center;
 }
 
+function forEachAndNextInLoop(list, cb) {
+  for(var i=0; i<list.length; i++) {
+    cb(list[i], list[(i+1)%list.length]);
+  }
+}
+
 function NodesEditor(window, camera) {
   this.window = window;
   this.camera = camera;
 
   this.normalColor = new Color(1.0, 0.2, 0.0, 1.0);
   this.selectedColor = new Color(0.0, 0.7, 1.0, 1.0);
-  this.roomColor = new Color(1.0, 0.2, 1.0, 1.0);
+  this.roomColor = new Color(1.0, 0.2, 1.0, 0.3);
+  this.selectedRoomColor = new Color(0.2, 1.0, 1.0, 0.3);
   this.currentLayer = null;
   this.enabled = false;
   this.nodes = [];
@@ -57,8 +65,8 @@ function NodesEditor(window, camera) {
   this.lineBuilder = new LineBuilder();
   this.lineBuilder.addLine(new Vec3(0, 0, 0), new Vec3(0, 0, 0), this.normalColor);
   this.lineMesh = new Mesh(this.lineBuilder, new ShowColors(), { lines: true});
-  this.roomsGeometry = new Geometry({ vertices: true, faces: true });
-  this.roomsMesh = new Mesh(this.roomsGeometry, new SolidColor({ color: new Color(1, 0, 1, 0.3) }));
+  this.roomsGeometry = new Geometry({ vertices: true, colors: true, faces: true });
+  this.roomsMesh = new Mesh(this.roomsGeometry, new ShowColors());
 
   this.nodeRadius = 0.003;
   var cube = new Cube(this.nodeRadius, 0.0005, this.nodeRadius)
@@ -66,6 +74,7 @@ function NodesEditor(window, camera) {
   this.wireCube = new Mesh(cube, new SolidColor({color:this.normalColor}), { lines: true });
 
   this.hoverNode = null;
+  this.hoverRoom = null;
 
   this.addEventHanlders();
   this.load('data/nodes.txt')
@@ -130,11 +139,14 @@ NodesEditor.prototype.addEventHanlders = function() {
     if (e.handled || !this.enabled) return;
     selectedNodes = this.nodes.filter(function(node) { return node.selected; });
     if (this.cancelNextClick) {
-      if (!e.shift)
+      if (!e.shift) {
         selectedNodes.forEach(function(node) {
           if (node != this.hoverNode) node.selected = false;
         }.bind(this));
-      if (this.draggedNode) this.draggedNode.selected = true;
+      }
+      if (this.draggedNode) {
+        this.draggedNode.selected = true;
+      }
       this.draggedNode = null;
       return;
     }
@@ -148,6 +160,13 @@ NodesEditor.prototype.addEventHanlders = function() {
       e.handled = true;
       this.cancelNextClick = true;
       this.draggedNode = null;
+    }
+    else if (this.hoverRoom) {
+      this.rooms.filter(prop('selected')).forEach(function(room) {
+        if (room != this.hoverRoom) room.selected = false;
+      })
+      this.hoverRoom.selected = !this.hoverRoom.selected;
+      this.updateRoomsMesh();
     }
     else {
       var forward = this.camera.getTarget().dup().sub(this.camera.getPosition()).normalize();
@@ -168,9 +187,9 @@ NodesEditor.prototype.addEventHanlders = function() {
   this.window.on('mouseMoved', function(e) {
     forward = this.camera.getTarget().dup().sub(this.camera.getPosition()).normalize()
     this.layerPlane = new Plane(this.currentLayer.position, forward);
-    ray = this.camera.getWorldRay(e.x, e.y, this.window.width, this.window.height);
-    hits = ray.hitTestPlane(this.layerPlane.point, this.layerPlane.normal);
-    hit3d = hits[0];
+    var ray = this.camera.getWorldRay(e.x, e.y, this.window.width, this.window.height);
+    var hits = ray.hitTestPlane(this.layerPlane.point, this.layerPlane.normal);
+    var hit3d = hits[0];
     this.hoverNode = null;
     this.nodes.forEach(function(node, i) {
       if (node.layerId != this.currentLayer.id) return;
@@ -178,6 +197,29 @@ NodesEditor.prototype.addEventHanlders = function() {
         this.hoverNode = node;
       }
     }.bind(this));
+    var hit2d = this.layerPlane.rebase(this.layerPlane.project(hit3d));
+    var triangle = new Triangle2D();
+    var prevHoverRoom = this.hoverRoom;
+    this.hoverRoom = false;
+    this.rooms.forEach(function(room) {
+      var points2d = room.nodes.map(prop('position2d'));
+      var center = centroid2D(points2d);
+      var hit = false;
+      forEachAndNextInLoop(points2d, function(p, np) {
+        triangle.a = p;
+        triangle.b = np;
+        triangle.c = center;
+        if (triangle.contains(hit2d)) {
+          hit = true;
+        }
+      });
+      if (hit) {
+        this.hoverRoom = room;
+      }
+    }.bind(this));
+    if (this.hoverRoom != prevHoverRoom) {
+      this.updateRoomsMesh();
+    }
   }.bind(this));
 
   this.window.on('mouseDragged', function(e) {
@@ -314,21 +356,26 @@ NodesEditor.prototype.updateConnectionsMesh = function() {
 NodesEditor.prototype.updateRoomsMesh = function() {
   this.roomsGeometry.vertices.length = 0;
   this.roomsGeometry.faces.length = 0;
+  this.roomsGeometry.colors.length = 0;
   this.rooms.forEach(function(room) {
     if (!this.currentLayer || !this.isNodeVisible(room.nodes[0])) return;
     var center = centroid3D(room.nodes.map(prop('position')));
     room.nodes.forEach(function(node, nodeIndex) {
       var nextNode = room.nodes[(nodeIndex + 1) % room.nodes.length];
       var i = this.roomsGeometry.vertices.length;
+      var color = (room.selected || room == this.hoverRoom) ? this.selectedRoomColor : this.roomColor;
       this.roomsGeometry.faces.push([i, i+1, i+2]);
       this.roomsGeometry.vertices.push(node.position);
       this.roomsGeometry.vertices.push(nextNode.position);
       this.roomsGeometry.vertices.push(center);
+      this.roomsGeometry.colors.push(color);
+      this.roomsGeometry.colors.push(color);
+      this.roomsGeometry.colors.push(color);
     }.bind(this));
   }.bind(this));
   this.roomsGeometry.vertices.dirty = true;
   this.roomsGeometry.faces.dirty = true;
-
+  this.roomsGeometry.colors.dirty = true;
 }
 
 NodesEditor.prototype.setCurrentLayer = function(layer) {
