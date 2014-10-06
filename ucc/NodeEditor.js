@@ -62,6 +62,8 @@ function NodesEditor(window, camera) {
   this.nodes = [];
   this.connections = [];
   this.rooms = [];
+  this.prevNode = null;
+  this.prevNodes = [];
 
   this.lineBuilder = new LineBuilder();
   this.lineBuilder.addLine(new Vec3(0, 0, 0), new Vec3(0, 0, 0), this.normalColor);
@@ -78,7 +80,7 @@ function NodesEditor(window, camera) {
   this.hoverRoom = null;
 
   this.addEventHanlders();
-  this.load('data/nodes.txt');
+  this.load(__dirname + '/../data/nodes.txt');
 
   this.textLabels = [];
 }
@@ -190,12 +192,30 @@ NodesEditor.prototype.addEventHanlders = function() {
       var hits = ray.hitTestPlane(this.layerPlane.point, this.layerPlane.normal);
       var hit3d = hits[0];
       var hit2d = this.layerPlane.rebase(this.layerPlane.project(hit3d));
-      this.nodes.push({
+      var node = {
         layerId: this.currentLayer.id,
         position: hit3d,
         position2d: hit2d,
         color: Color.Green
-      })
+      };
+      this.nodes.push(node);
+
+      if (this.prevNode && e.ctrl) {
+        this.prevNode.selected = true;
+        node.selected = true;
+        this.connections.push({
+          a: this.prevNode,
+          b: node
+        });
+        this.updateConnectionsMesh();
+      }
+      this.prevNode = node;
+      this.prevNodes.push(node);
+    }
+
+    if (!e.ctrl) {
+      this.prevNode = null;
+      this.prevNodes.length = 0;
     }
   }.bind(this));
 
@@ -257,10 +277,11 @@ NodesEditor.prototype.addEventHanlders = function() {
   this.window.on('keyDown', function(e) {
     if (!this.enabled) return;
     switch (e.str) {
-      case 'S': this.save('data/nodes.txt'); break;
-      case 'L': this.load('data/nodes.txt'); break;
+      case 'S': this.save(__dirname + '/../data/nodes.txt'); break;
+      case 'L': this.load(__dirname + '/../data/nodes.txt'); break;
       case 'j': this.joinNodes(true); break;
       case 'J': this.joinNodes(false); break;
+      case 'c': this.closeLoop(true); break;
       case 'r': this.makeRoom(true); break;
       case 'R': this.makeRoom(false); break;
     }
@@ -314,6 +335,16 @@ NodesEditor.prototype.joinNodes = function(connect) {
       this.connections.splice(this.connections.indexOf(existingConnection), 1)
       this.updateConnectionsMesh();
     }
+  }
+}
+
+NodesEditor.prototype.closeLoop = function() {
+  if (this.prevNodes.length > 2) {
+    this.connections.push({
+      a: this.prevNodes[0],
+      b: this.prevNodes[this.prevNodes.length-1]
+    })
+    this.updateConnectionsMesh();
   }
 }
 
@@ -406,7 +437,7 @@ NodesEditor.prototype.updateRoomsMesh = function() {
   roomsOnThisLevel.forEach(function(room) {
     var p2d = this.camera.getScreenPos(room.nodes[0].position, this.window.width, this.window.height);
     var p3d = new Vec3(p2d.x, this.window.height - p2d.y, 0.0);
-    this.textLabels.push(new TextLabel(this.window, p3d, '' +room.id, 30));
+    this.textLabels.push(new TextLabel(this.window, p3d, '' +room.id, 10));
   }.bind(this));
 }
 

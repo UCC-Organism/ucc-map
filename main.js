@@ -3,6 +3,8 @@ var geom = require('pex-geom');
 var color = require('pex-color');
 var sys = require('pex-sys');
 var gui = require('pex-gui');
+var gen = require('pex-gen');
+var materials = require('pex-materials');
 
 var PerspectiveCamera = glu.PerspectiveCamera;
 var OrthographicCamera = glu.OrthographicCamera;
@@ -15,6 +17,8 @@ var Color = color.Color;
 var GUI = gui.GUI;
 var Window = sys.Window;
 var Platform = sys.Platform;
+var Cube = gen.Cube;
+var SolidColor = materials.SolidColor;
 
 var Layer = require('./ucc/Layer');
 var LayersController = require('./ucc/LayersController');
@@ -104,7 +108,7 @@ Window.create({
     this.layers = this.layerInfo.map(function(layerData, id) {
       var layer = new Layer(layerData.img, id);
       var layerYPos = layerData.level >= 0 ? layerData.level * this.layerDistance : 10;
-      layer.position = new Vec3(Math.random() * 0.5 - 0.25, -0.02 + layerYPos, Math.random() * 0.5 - 0.25);
+      //layer.position = new Vec3(Math.random() * 0.5 - 0.25, -0.02 + layerYPos, Math.random() * 0.5 - 0.25);
       layer.rotationAngle = 0;
       layer.name = layerData.img;
       layer.level = layerData.level;
@@ -153,7 +157,9 @@ Window.create({
 
     this.on('keyDown', function(e) {
       switch (e.str) {
-        case 'S': this.gui.save('data/settings.json'); break;
+        case 'S':
+          this.gui.save(__dirname + '/data/settings.json');
+          break;
       }
     }.bind(this));
   },
@@ -252,6 +258,7 @@ Window.create({
 
     glu.enableDepthReadAndWrite(false, false);
     this.nodeEditor.draw(this.camera);
+
     this.gui.draw();
   }
 });
