@@ -55,8 +55,14 @@ function NodesEditor(window, camera) {
 
   this.normalColor = new Color(1.0, 0.2, 0.0, 1.0);
   this.selectedColor = new Color(0.0, 0.7, 1.0, 1.0);
-  this.roomColor = new Color(1.0, 0.2, 1.0, 0.3);
-  this.selectedRoomColor = new Color(0.2, 1.0, 1.0, 0.3);
+  this.roomColor = new Color(0.2, 0.2, 0.2, 0.3);
+  this.roomColorByType = {
+    classroom: new Color(0.2, 0.8, 0.1, 0.3),
+    toilet: new Color(0.2, 1.0, 1.0, 0.3),
+    research: new Color(0.9, 0.9, 0.2, 0.3),
+    admin: new Color(0.9, 0.0, 0.9, 0.3)
+  }
+  this.selectedRoomColor = new Color(0.9, 0.1, 0.2, 0.3);
   this.currentLayer = null;
   this.enabled = false;
   this.nodes = [];
@@ -92,6 +98,7 @@ NodesEditor.prototype.save = function(fileName) {
   function serializeRoom(room) {
     return {
       id: room.id,
+      type: room.type,
       nodes: room.nodes.map(function(node) {
         return self.nodes.indexOf(node);
       })
@@ -125,6 +132,7 @@ NodesEditor.prototype.load = function(fileName) {
     self.rooms = data.rooms.map(function(roomData) {
       return {
         id: roomData.id,
+        type: roomData.type,
         nodes: roomData.nodes.map(function(nodeIndex) {
           return self.nodes[nodeIndex];
         })
@@ -432,7 +440,13 @@ NodesEditor.prototype.updateRoomsMesh = function() {
     room.nodes.forEach(function(node, nodeIndex) {
       var nextNode = room.nodes[(nodeIndex + 1) % room.nodes.length];
       var i = this.roomsGeometry.vertices.length;
-      var color = (room.selected || room == this.hoverRoom) ? this.selectedRoomColor : this.roomColor;
+      var color = this.roomColor;
+      if (this.roomColorByType[room.type]) {
+        color = this.roomColorByType[room.type];
+      }
+      if (room.selected || room == this.hoverRoom) {
+        color = this.selectedRoomColor;
+      }
       this.roomsGeometry.faces.push([i, i+1, i+2]);
       this.roomsGeometry.vertices.push(node.position);
       this.roomsGeometry.vertices.push(nextNode.position);

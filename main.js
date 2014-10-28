@@ -38,6 +38,7 @@ Window.create({
   enableLayerEditing: false,
   showPlans: true,
   selectedRoomId: 'N/A',
+  selectedRoomType: 'N/A',
   selectedRoom: null,
   init: function() {
     //has to be here to capture events before others
@@ -152,6 +153,23 @@ Window.create({
       }
       else {
         this.selectedRoomId = 'N/A';
+        this.selectedRoomType = 'N/A';
+      }
+    }.bind(this));
+    var roomTypes = [
+      { name: 'Other', value: ''},
+      { name: 'Classroom', value: 'classroom'},
+      { name: 'Toilet', value: 'toilet'},
+      { name: 'Research', value: 'research'},
+      { name: 'Admin', value: 'admin'}
+    ]
+    this.roomIdParam = this.gui.addRadioList('Room type', this, 'selectedRoomType', roomTypes, function(e) {
+      if (this.selectedRoom) {
+        this.selectedRoom.type = this.selectedRoomType;;
+      }
+      else {
+        this.selectedRoomId = 'N/A';
+        this.selectedRoomType = 'N/A';
       }
     }.bind(this));
 
@@ -215,6 +233,7 @@ Window.create({
       this.selectedRoom = room;
       if (room) {
         this.selectedRoomId = '' + room.id;
+        this.selectedRoomType = room.type ? room.type : '';
       }
       else {
         this.selectedRoomId = 'N/A';
