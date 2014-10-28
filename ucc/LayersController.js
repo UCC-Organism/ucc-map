@@ -82,7 +82,7 @@ function LayersController(window, scene, camera) {
   this.dragScale = new Vec3();
   this.dragStartRotationAngle = 0;
 
-  this.loadLayers('data/layers.txt');
+  this.loadLayers('data/layers.json');
 
   this.addEventHandlers();
 }
@@ -141,8 +141,8 @@ LayersController.prototype.addEventHandlers = function() {
     switch (e.str) {
       case '-': if (this.selectedLayer) this.selectedLayer.alpha = Math.max(0, this.selectedLayer.alpha - 0.1); break;
       case '=': if (this.selectedLayer) this.selectedLayer.alpha = Math.min(1, this.selectedLayer.alpha + 0.1); break;
-      case 'S': this.saveLayers('data/layers.txt'); break;
-      case 'L': this.loadLayers('data/layers.txt'); break;
+      case 'S': this.saveLayers('data/layers.json'); break;
+      case 'L': this.loadLayers('data/layers.json'); break;
     }
     switch (e.keyCode) {
       case 48: this.toggleCompactLayers()

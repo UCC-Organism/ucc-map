@@ -80,7 +80,7 @@ function NodesEditor(window, camera) {
   this.hoverRoom = null;
 
   this.addEventHanlders();
-  this.load(__dirname + '/../data/nodes.txt');
+  this.load(__dirname + '/../data/nodes.json');
 
   this.textLabels = [];
 }
@@ -277,8 +277,8 @@ NodesEditor.prototype.addEventHanlders = function() {
   this.window.on('keyDown', function(e) {
     if (!this.enabled) return;
     switch (e.str) {
-      case 'S': this.save(__dirname + '/../data/nodes.txt'); break;
-      case 'L': this.load(__dirname + '/../data/nodes.txt'); break;
+      case 'S': this.save(__dirname + '/../data/nodes.json'); break;
+      case 'L': this.load(__dirname + '/../data/nodes.json'); break;
       case 'j': this.joinNodes(true); break;
       case 'J': this.joinNodes(false); break;
       case 'c': this.closeLoop(true); break;
