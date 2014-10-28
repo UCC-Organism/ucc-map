@@ -33,6 +33,7 @@ class TextLabel
     @meshBg = new Mesh(@geom, new SolidColor({ color: Color.Red }))
     @meshBg.scale.set(@fontSize, @fontSize, @fontSize)
     @meshBg.position = @position.dup()
+    @text = "";
     #@mesh.position.x -= text.length / 2 * @fontSize * @letterWidth
 
     this.alpha = 1
@@ -52,6 +53,7 @@ class TextLabel
     ]
 
   setText: (text="") ->
+    @text = text;
     @mesh.position = @position.dup()
     @mesh.position.x -= text.length / 2 * @fontSize * @letterWidth
     for i in [0...@maxLen]

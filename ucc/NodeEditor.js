@@ -78,11 +78,10 @@ function NodesEditor(window, camera) {
 
   this.hoverNode = null;
   this.hoverRoom = null;
+  this.textLabels = [];
 
   this.addEventHanlders();
   this.load(__dirname + '/../data/nodes.json');
-
-  this.textLabels = [];
 }
 
 NodesEditor.prototype.save = function(fileName) {
@@ -131,7 +130,8 @@ NodesEditor.prototype.load = function(fileName) {
         })
       };
     });
-    self.updateConnectionsMesh()
+    self.updateConnectionsMesh();
+    self.updateRoomsMesh();
   });
 }
 
@@ -153,6 +153,12 @@ NodesEditor.prototype.addEventHanlders = function() {
       }
       if (this.draggedNode) {
         this.draggedNode.selected = true;
+      }
+      var affectedRooms = this.rooms.filter(function(room) {
+        return room.nodes.indexOf(this.draggedNode) != -1;
+      }.bind(this))
+      if (affectedRooms.length > 0) {
+        this.updateRoomsMesh();
       }
       this.draggedNode = null;
       return;
@@ -440,14 +446,19 @@ NodesEditor.prototype.updateRoomsMesh = function() {
   this.roomsGeometry.faces.dirty = true;
   this.roomsGeometry.colors.dirty = true;
 
-  this.textLabels.forEach(function(label) {
-    label.dispose();
-  });
-  this.textLabels.length = 0;
-  roomsOnThisLevel.forEach(function(room) {
+  this.textLabels.forEach(function(label, labelIndex) {
+    if (labelIndex >= roomsOnThisLevel.length) {
+      label.dispose();
+    }
+  }.bind(this));
+  this.textLabels.length = roomsOnThisLevel.length;
+  roomsOnThisLevel.forEach(function(room, roomIndex) {
     var p2d = this.camera.getScreenPos(room.nodes[0].position, this.window.width, this.window.height);
     var p3d = new Vec3(p2d.x, this.window.height - p2d.y, 0.0);
-    this.textLabels.push(new TextLabel(this.window, p3d, '' +room.id, 10));
+    if (!this.textLabels[roomIndex]) {
+      this.textLabels[roomIndex] = new TextLabel(this.window, p3d, '' +room.id, 20);
+    }
+    this.textLabels[roomIndex].setText('' +room.id);
   }.bind(this));
 }
 

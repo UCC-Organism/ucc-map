@@ -50,6 +50,7 @@ TextLabel = (function() {
     }));
     this.meshBg.scale.set(this.fontSize, this.fontSize, this.fontSize);
     this.meshBg.position = this.position.dup();
+    this.text = "";
     this.alpha = 1;
   }
 
@@ -69,6 +70,7 @@ TextLabel = (function() {
     if (text == null) {
       text = "";
     }
+    this.text = text;
     this.mesh.position = this.position.dup();
     this.mesh.position.x -= text.length / 2 * this.fontSize * this.letterWidth;
     _results = [];

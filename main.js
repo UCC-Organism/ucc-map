@@ -234,8 +234,6 @@ Window.create({
     }
     this.focusLayerId = layerIndex;
     this.gui.items[0].dirty = true;
-
-    //this.gui.save('data/settings.json');
   },
   draw: function() {
     for (var i=0; i<this.layers.length; i++) {
