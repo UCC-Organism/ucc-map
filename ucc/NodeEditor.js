@@ -383,11 +383,21 @@ NodesEditor.prototype.sortNodes = function(nodes) {
 
 NodesEditor.prototype.makeRoom = function(connect) {
   var selectedNodes = this.nodes.filter(function(node) { return node.selected; });
-  var sortedNodes = this.sortNodes(selectedNodes);
-  this.rooms.push({
-    id: 'undefined',
-    nodes: sortedNodes
-  });
+  if (connect) {
+    var sortedNodes = this.sortNodes(selectedNodes);
+    this.rooms.push({
+      id: 'undefined',
+      nodes: sortedNodes
+    });
+  }
+  else {
+    var roomsToRemove = this.rooms.filter(function(room) {
+      return room.nodes.indexOf(selectedNodes[0]) != -1;
+    })
+    roomsToRemove.forEach(function(room) {
+      this.rooms.splice(this.rooms.indexOf(room), 1);
+    }.bind(this));
+  }
   this.updateRoomsMesh();
 }
 
@@ -448,7 +458,7 @@ NodesEditor.prototype.setCurrentLayer = function(layer) {
 }
 
 NodesEditor.prototype.isNodeVisible = function(node) {
-  return this.currentLayer.id == 0 || node.layerId == this.currentLayer.id;
+  return node && this.currentLayer.id == 0 || node.layerId == this.currentLayer.id;
 }
 
 NodesEditor.prototype.draw = function(camera) {
