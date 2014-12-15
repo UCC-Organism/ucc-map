@@ -60,7 +60,8 @@ function NodesEditor(window, camera) {
     classroom: new Color(0.2, 0.8, 0.1, 0.3),
     toilet: new Color(0.2, 1.0, 1.0, 0.3),
     research: new Color(0.9, 0.9, 0.2, 0.3),
-    admin: new Color(0.9, 0.0, 0.9, 0.3)
+    admin: new Color(0.9, 0.0, 0.9, 0.3),
+    empty: new Color(0.9, 0.0, 0.0, 0.8)
   }
   this.selectedRoomColor = new Color(0.9, 0.1, 0.2, 0.3);
   this.currentLayer = null;
