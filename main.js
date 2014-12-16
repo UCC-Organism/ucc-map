@@ -162,6 +162,8 @@ Window.create({
       { name: 'Toilet', value: 'toilet'},
       { name: 'Research', value: 'research'},
       { name: 'Admin', value: 'admin'},
+      { name: 'Closet', value: 'closet'},
+      { name: 'Exit', value: 'exit'},
       { name: 'Empty', value: 'empty'},
     ]
     this.roomIdParam = this.gui.addRadioList('Room type', this, 'selectedRoomType', roomTypes, function(e) {
