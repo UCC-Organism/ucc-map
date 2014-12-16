@@ -20,6 +20,7 @@ var Geometry = geom.Geometry;
 var Triangle2D = geom.Triangle2D;
 var TextLabel = require('../utils/TextLabel');
 var Config = require('../Config');
+var convertToClientFormat = require('./ClientFormatter');
 
 function prop(name) {
   return function(o) {
@@ -91,7 +92,7 @@ function NodesEditor(window, camera) {
   this.load(__dirname + '/../data/nodes.json');
 }
 
-NodesEditor.prototype.save = function(fileName) {
+NodesEditor.prototype.serialize = function() {
   var self = this;
   function serializeConnection(connection) {
     return [ self.nodes.indexOf(connection.a), self.nodes.indexOf(connection.b) ];
@@ -110,6 +111,16 @@ NodesEditor.prototype.save = function(fileName) {
    connections: this.connections.map(serializeConnection),
    rooms: this.rooms.map(serializeRoom)
   };
+  return data;
+}
+
+NodesEditor.prototype.save = function(fileName) {
+  var data = this.serialize();
+  IO.saveTextFile(fileName, JSON.stringify(data));
+}
+
+NodesEditor.prototype.saveClient = function(fileName) {
+  var data = convertToClientFormat(this.serialize());
   IO.saveTextFile(fileName, JSON.stringify(data));
 }
 
@@ -292,7 +303,7 @@ NodesEditor.prototype.addEventHanlders = function() {
   this.window.on('keyDown', function(e) {
     if (!this.enabled) return;
     switch (e.str) {
-      case 'S': this.save(__dirname + '/../data/nodes.json'); break;
+      case 'S': this.save(__dirname + '/../data/nodes.json'); this.saveClient(__dirname + '/../data/nodes.client.json'); break;
       case 'L': this.load(__dirname + '/../data/nodes.json'); break;
       case 'j': this.joinNodes(true); break;
       case 'J': this.joinNodes(false); break;
