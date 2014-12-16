@@ -1,4 +1,2 @@
 .DS_Store
-node_modules/.bin
-node_modules/merge
-node_modules/seedrandom
+node_modules

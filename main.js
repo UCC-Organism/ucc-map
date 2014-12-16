@@ -5,6 +5,7 @@ var sys = require('pex-sys');
 var gui = require('pex-gui');
 var gen = require('pex-gen');
 var materials = require('pex-materials');
+var random = require('pex-random');
 
 var PerspectiveCamera = glu.PerspectiveCamera;
 var OrthographicCamera = glu.OrthographicCamera;
@@ -44,7 +45,7 @@ Window.create({
     //has to be here to capture events before others
     this.gui = new GUI(this);
     this.camera = new PerspectiveCamera(60, this.width / this.height, 0.01, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1));
-    geom.randomSeed(0);
+    random.seed(0);
     this.initLayers();
     this.initScene();
     this.initGUI();

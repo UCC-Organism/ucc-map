@@ -1,0 +1,30 @@
+{
+  "name": "ucc-map",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "brfs": "1.2.0",
+    "browser-sync": "1.3.2",
+    "browserify": "5.9.1",
+    "pex-color": "^0.3.2",
+    "pex-fx": "^0.0.5",
+    "pex-gen": "^0.1.0",
+    "pex-geom": "^0.10.5",
+    "pex-glu": "^0.2.0",
+    "pex-gui": "^0.3.1",
+    "pex-materials": "^0.1.0",
+    "pex-random": "^0.2.1",
+    "pex-sys": "^0.2.0",
+    "ramda": "^0.8.0",
+    "timeline-js": "0.0.2",
+    "vinyl-source-stream": "0.1.1",
+    "watchify": "1.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
