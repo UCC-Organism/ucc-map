@@ -5,7 +5,7 @@ var gen = require('pex-gen');
 var color = require('pex-color');
 var sys = require('pex-sys');
 var R = require('ramda');
-
+var Platform = sys.Platform;
 var ShowColors = materials.ShowColors;
 var SolidColor = materials.SolidColor;
 var Mesh = glu.Mesh;
@@ -116,12 +116,14 @@ NodesEditor.prototype.serialize = function() {
 
 NodesEditor.prototype.save = function(fileName) {
   var data = this.serialize();
-  IO.saveTextFile(fileName, JSON.stringify(data));
+  var url = Platform.isPlask ? fileName : 'save.php?filename='+filename;
+  IO.saveTextFile(url, JSON.stringify(data));
 }
 
 NodesEditor.prototype.saveClient = function(fileName) {
   var data = convertToClientFormat(this.serialize());
-  IO.saveTextFile(fileName, JSON.stringify(data));
+  var url = Platform.isPlask ? fileName : 'save.php?filename='+filename;
+  IO.saveTextFile(url, JSON.stringify(data));
 }
 
 NodesEditor.prototype.load = function(fileName) {

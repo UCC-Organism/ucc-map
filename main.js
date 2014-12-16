@@ -43,6 +43,7 @@ Window.create({
   selectedRoomType: 'N/A',
   selectedRoom: null,
   init: function() {
+    Time.verbose = true;
     //has to be here to capture events before others
     this.gui = new GUI(this);
     this.camera = new PerspectiveCamera(60, this.width / this.height, 0.01, 100, new Vec3(0, 1, 0), new Vec3(0, 0, 0), new Vec3(0, 0, -1));
@@ -129,6 +130,10 @@ Window.create({
     this.arcball.enabled = true;
     this.panner = new Panner(this, this.camera);
     this.panner.enabled = false;
+
+    setTimeout(function() {
+      this.onFocusLayerChange(7);
+    }.bind(this), 1000)
   },
   initGUI: function() {
     this.gui.addHeader('Keyboard');
