@@ -28,7 +28,7 @@ function Layer(imageFile, id) {
   this.selected = false;
   this.alpha = 1;
 
-  Texture2D.load(imageFile, function(texture) {
+  Texture2D.load(imageFile, { flip: false }, function(texture) {
     texture.bind();
     gl = texture.gl;
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
