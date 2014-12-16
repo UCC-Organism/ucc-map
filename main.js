@@ -25,6 +25,7 @@ var Layer = require('./ucc/Layer');
 var LayersController = require('./ucc/LayersController');
 var NodeEditor = require('./ucc/NodeEditor');
 var Panner = require('./utils/Panner');
+var Config = require('./Config');
 
 Window.create({
   settings: {
@@ -157,16 +158,11 @@ Window.create({
         this.selectedRoomType = 'N/A';
       }
     }.bind(this));
-    var roomTypes = [
-      { name: 'Other', value: ''},
-      { name: 'Classroom', value: 'classroom'},
-      { name: 'Toilet', value: 'toilet'},
-      { name: 'Research', value: 'research'},
-      { name: 'Admin', value: 'admin'},
-      { name: 'Closet', value: 'closet'},
-      { name: 'Exit', value: 'exit'},
-      { name: 'Empty', value: 'empty'},
-    ]
+
+    var roomTypes = Config.roomTypes.map(function(roomType) {
+      return { name: roomType.label, value: roomType.type };
+    });
+
     this.roomIdParam = this.gui.addRadioList('Room type', this, 'selectedRoomType', roomTypes, function(e) {
       if (this.selectedRoom) {
         this.selectedRoom.type = this.selectedRoomType;;
@@ -245,7 +241,7 @@ Window.create({
     }.bind(this);
     this.camera.getTarget().setVec3(selectedLayer.position);
     if (reorientCamera) {
-      this.camera.setUp(new Vec3(0, 0, 1));
+      this.camera.setUp(new Vec3(0, 0, -1));
       this.camera.position.set(selectedLayer.position.x, selectedLayer.position.y + 1, selectedLayer.position.z);
       this.camera.updateMatrices();
     }

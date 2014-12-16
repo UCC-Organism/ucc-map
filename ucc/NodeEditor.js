@@ -4,6 +4,7 @@ var glu = require('pex-glu');
 var gen = require('pex-gen');
 var color = require('pex-color');
 var sys = require('pex-sys');
+var R = require('ramda');
 
 var ShowColors = materials.ShowColors;
 var SolidColor = materials.SolidColor;
@@ -18,6 +19,7 @@ var IO = sys.IO;
 var Geometry = geom.Geometry;
 var Triangle2D = geom.Triangle2D;
 var TextLabel = require('../utils/TextLabel');
+var Config = require('../Config');
 
 function prop(name) {
   return function(o) {
@@ -56,13 +58,11 @@ function NodesEditor(window, camera) {
   this.normalColor = new Color(1.0, 0.2, 0.0, 1.0);
   this.selectedColor = new Color(0.0, 0.7, 1.0, 1.0);
   this.roomColor = new Color(0.2, 0.2, 0.2, 0.3);
-  this.roomColorByType = {
-    classroom: new Color(0.2, 0.8, 0.1, 0.3),
-    toilet: new Color(0.2, 1.0, 1.0, 0.3),
-    research: new Color(0.9, 0.9, 0.2, 0.3),
-    admin: new Color(0.9, 0.0, 0.9, 0.3),
-    empty: new Color(0.9, 0.0, 0.0, 0.8)
-  }
+  this.roomColorByType = Config.roomTypes.reduce(function(o, roomType) {
+    o[roomType.type] = roomType.color;
+    o[roomType.type].a = Config.editorRoomAlpha;
+    return o;
+  }, {});
   this.selectedRoomColor = new Color(0.9, 0.1, 0.2, 0.3);
   this.currentLayer = null;
   this.enabled = false;
