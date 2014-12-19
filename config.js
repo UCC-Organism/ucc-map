@@ -1,4 +1,5 @@
 var Color = require('pex-color').Color;
+var Platform = require('pex-sys').Platform;
 
 var Config = {
   editorRoomAlpha: 0.5,
@@ -28,5 +29,6 @@ Config.roomTypes.forEach(function(roomType) {
   roomType.edgeColor = Color.fromHex(roomType.edgeColor);
 });
 
+Config.dataPath = Platform.isBrowser ? 'data' : __dirname + '/data';
 
 module.exports = Config;

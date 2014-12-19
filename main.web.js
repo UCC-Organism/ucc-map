@@ -1,5 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/vorg/Workspace/var-uccorganism/ucc-map/Config.js":[function(require,module,exports){
+(function (__dirname){
 var Color = require('pex-color').Color;
+var Platform = require('pex-sys').Platform;
 
 var Config = {
   editorRoomAlpha: 0.5,
@@ -29,11 +31,12 @@ Config.roomTypes.forEach(function(roomType) {
   roomType.edgeColor = Color.fromHex(roomType.edgeColor);
 });
 
+Config.dataPath = Platform.isBrowser ? 'data' : __dirname + '/data';
 
 module.exports = Config;
-},{"pex-color":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-color/index.js"}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/lib/../main.js":[function(require,module,exports){
-(function (__dirname){
-var glu = require('pex-glu');
+}).call(this,"/")
+},{"pex-color":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-color/index.js","pex-sys":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-sys/index.js"}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/lib/../main.js":[function(require,module,exports){
+  var glu = require('pex-glu');
 var geom = require('pex-geom');
 var color = require('pex-color');
 var sys = require('pex-sys');
@@ -55,6 +58,7 @@ var Window = sys.Window;
 var Platform = sys.Platform;
 var Cube = gen.Cube;
 var SolidColor = materials.SolidColor;
+var Time = sys.Time;
 
 var Layer = require('./ucc/Layer');
 var LayersController = require('./ucc/LayersController');
@@ -216,10 +220,19 @@ Window.create({
     this.on('keyDown', function(e) {
       switch (e.str) {
         case 'S':
-          this.gui.save(__dirname + '/data/settings.json');
+          //this.gui.save(__dirname + '/data/settings.json');
           break;
       }
     }.bind(this));
+
+    if (Platform.isBrowser) {
+      window.addEventListener('keydown', function(e) {
+        //capture backspace
+        if (e.keyCode == 8) {
+          e.preventDefault();
+        }
+      })
+    }
   },
   initKeyboard: function() {
     this.on('keyDown', function(e) {
@@ -320,7 +333,6 @@ Window.create({
   }
 });
 
-}).call(this,"/")
 },{"./Config":"/Users/vorg/Workspace/var-uccorganism/ucc-map/Config.js","./ucc/Layer":"/Users/vorg/Workspace/var-uccorganism/ucc-map/ucc/Layer.js","./ucc/LayersController":"/Users/vorg/Workspace/var-uccorganism/ucc-map/ucc/LayersController.js","./ucc/NodeEditor":"/Users/vorg/Workspace/var-uccorganism/ucc-map/ucc/NodeEditor.js","./utils/Panner":"/Users/vorg/Workspace/var-uccorganism/ucc-map/utils/Panner.js","pex-color":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-color/index.js","pex-gen":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-gen/index.js","pex-geom":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-geom/index.js","pex-glu":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-glu/index.js","pex-gui":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-gui/index.js","pex-materials":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-materials/index.js","pex-random":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-random/index.js","pex-sys":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-sys/index.js"}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/materials/TexturedAlpha.js":[function(require,module,exports){
 (function (__dirname){
 var glu = require('pex-glu');
@@ -3554,7 +3566,7 @@ function xor(a, b) {
 }
 }).call(this,require("buffer").Buffer)
 },{"buffer":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/buffer/index.js"}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/crypto-browserify/node_modules/browserify-sign/aesid.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
+module.exports=module.exports=module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
 "2.16.840.1.101.3.4.1.2": "aes-128-cbc",
 "2.16.840.1.101.3.4.1.3": "aes-128-ofb",
 "2.16.840.1.101.3.4.1.4": "aes-128-cfb",
@@ -11350,7 +11362,7 @@ if (typeof Object.create === 'function') {
 }
 
 },{}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/crypto-browserify/node_modules/browserify-sign/node_modules/elliptic/package.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports={
   "name": "elliptic",
   "version": "0.15.15",
   "description": "EC cryptography",
@@ -17599,7 +17611,7 @@ if (typeof Object.create === 'function') {
 }
 
 },{}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/crypto-browserify/node_modules/create-ecdh/node_modules/elliptic/package.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports={
   "name": "elliptic",
   "version": "0.15.15",
   "description": "EC cryptography",
@@ -20055,7 +20067,7 @@ if (typeof window === 'object') {
 }
 
 },{}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/crypto-browserify/node_modules/diffie-hellman/primes.json":[function(require,module,exports){
-module.exports=module.exports=module.exports=module.exports=module.exports={
+module.exports=module.exports=module.exports={
     "modp1": {
         "gen": "02",
         "prime": "ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a63a3620ffffffffffffffff"
@@ -33404,6 +33416,8 @@ var Spline2D = geom.Spline2D;
 var IO = sys.IO;
 var Color = color.Color;
 
+var VK_BACKSPACE = Platform.isPlask ? 51 : 8;
+
 //`window` - parent window
 //`x` - gui x position
 //`y` - gui y position
@@ -33441,10 +33455,22 @@ GUI.prototype.bindEventListeners = function (window) {
   window.on('leftMouseUp', function (e) {
     self.onMouseUp(e);
   });
+  window.on('keyDown', function (e) {
+    self.onKeyDown(e);
+  });
 };
 
 GUI.prototype.onMouseDown = function (e) {
   if (!this.enabled) return;
+
+  this.items.forEach(function(item) {
+    if (item.type == 'text') {
+      if (item.focus) {
+        item.focus = false;
+        item.dirty = true;
+      }
+    }
+  })
 
   this.activeControl = null;
   this.mousePos.set(e.x / this.highdpi - this.x, e.y / this.highdpi - this.y);
@@ -33519,7 +33545,13 @@ GUI.prototype.onMouseDown = function (e) {
           }
         }
       }
+      else if (this.activeControl.type == 'text') {
+        this.activeControl.focus = true;
+      }
+
+      console.log('GUI.onMouseDown handled');
       e.handled = true;
+      this.cancelNextMouseUp = true;
       this.onMouseDrag(e);
       break;
     }
@@ -33640,6 +33672,11 @@ GUI.prototype.onMouseDrag = function (e) {
 GUI.prototype.onMouseUp = function (e) {
   if (!this.enabled) return;
 
+  if (this.cancelNextMouseUp) {
+    e.handled = true;
+    this.cancelNextMouseUp = false;
+  }
+
   if (this.activeControl) {
     this.activeControl.active = false;
     this.activeControl.dirty = true;
@@ -33647,6 +33684,35 @@ GUI.prototype.onMouseUp = function (e) {
     this.activeControl = null;
   }
 };
+
+GUI.prototype.onKeyDown = function (e) {
+  if (e.handled) return;
+  var focusedItem = this.items.filter(function(item) { return item.type == 'text' && item.focus})[0];
+  if (focusedItem) {
+    e.handled = true;
+    var c = e.str.charCodeAt(0);
+    if (c >= 32 && c <= 126) {
+      focusedItem.contextObject[focusedItem.attributeName] += e.str;
+      focusedItem.dirty = true;
+      if (focusedItem.onchange) {
+        focusedItem.onchange(focusedItem.contextObject[focusedItem.attributeName]);
+      }
+    }
+    else {
+      switch(e.keyCode) {
+        case VK_BACKSPACE:
+          var str = focusedItem.contextObject[focusedItem.attributeName];
+          focusedItem.contextObject[focusedItem.attributeName] = str.substr(0, Math.max(0, str.length-1));
+          focusedItem.dirty = true;
+          if (focusedItem.onchange) {
+            focusedItem.onchange(focusedItem.contextObject[focusedItem.attributeName]);
+          }
+          break;
+      }
+    }
+    e.handled = true;
+  }
+}
 
 GUI.prototype.addHeader = function (title) {
   var ctrl = new GUIControl({
@@ -33751,6 +33817,20 @@ GUI.prototype.addParam = function (title, contextObject, attributeName, options,
   else if (contextObject[attributeName] instanceof Vec3) {
     var ctrl = new GUIControl({
       type: 'vec3',
+      title: title,
+      contextObject: contextObject,
+      attributeName: attributeName,
+      activeArea: new Rect(0, 0, 0, 0),
+      options: options,
+      onchange: onchange,
+      dirty: true
+    });
+    this.items.push(ctrl);
+    return ctrl;
+  }
+  else if (typeof contextObject[attributeName] == 'string') {
+    var ctrl = new GUIControl({
+      type: 'text',
       title: title,
       contextObject: contextObject,
       attributeName: attributeName,
@@ -34226,6 +34306,7 @@ HTMLCanvasRenderer.prototype.draw = function (items, scale) {
     }
     if (e.type == 'spline1D' || e.type == 'spline2D') eh = 24 + w;
     if (e.type == 'header') eh = 26 * scale;
+    if (e.type == 'text') eh = 45 * scale;
 
     if (e.type != 'separator') {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.56)';
@@ -34368,6 +34449,19 @@ HTMLCanvasRenderer.prototype.draw = function (items, scale) {
       ctx.fillStyle = 'rgba(0, 0, 0, 1)';
       ctx.fillText(items[i].title, dx + 5, dy + 16);
     }
+    else if (e.type == 'text') {
+      e.activeArea.set(dx + 3, dy + 20, w - 6, eh - 20 - 5);
+      ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+      ctx.fillText(items[i].title, dx + 3, dy + 13);
+      ctx.fillStyle = 'rgba(50, 50, 50, 1)';
+      ctx.fillRect(dx + 3, dy + 20, e.activeArea.width, e.activeArea.height);
+      ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+      ctx.fillText(e.contextObject[e.attributeName], dx + 3 + 3, dy + 15 + 20);
+      if (e.focus) {
+        ctx.strokeStyle = 'rgba(255, 255, 0, 1)';
+        ctx.strokeRect(e.activeArea.x-0.5, e.activeArea.y-0.5, e.activeArea.width, e.activeArea.height);
+      }
+    }
     else if (e.type == 'separator') {
       //do nothing
     }
@@ -34446,6 +34540,12 @@ function SkiaRenderer(width, height, highdpi) {
   this.headerBgPaint = new SkPaint();
   this.headerBgPaint.setStyle(SkPaint.kFillStyle);
   this.headerBgPaint.setColor(255, 255, 255, 255);
+  this.textBgPaint = new SkPaint();
+  this.textBgPaint.setStyle(SkPaint.kFillStyle);
+  this.textBgPaint.setColor(50, 50, 50, 255);
+  this.textBorderPaint = new SkPaint();
+  this.textBorderPaint.setStyle(SkPaint.kStrokeStyle);
+  this.textBorderPaint.setColor(255, 255, 0, 255);
   this.controlBgPaint = new SkPaint();
   this.controlBgPaint.setStyle(SkPaint.kFillStyle);
   this.controlBgPaint.setColor(150, 150, 150, 255);
@@ -34526,6 +34626,7 @@ SkiaRenderer.prototype.draw = function(items, scale) {
     }
     if (e.type == 'spline1D' || e.type == 'spline2D') eh = 24 + w;
     if (e.type == 'header') eh = 26 * scale;
+    if (e.type == 'text') eh = 45 * scale;
 
     if (e.type != 'separator') {
       canvas.drawRect(this.panelBgPaint, dx, dy, dx + w, dy + eh - 2);
@@ -34685,6 +34786,15 @@ SkiaRenderer.prototype.draw = function(items, scale) {
     else if (e.type == 'header') {
       canvas.drawRect(this.headerBgPaint, dx + 3, dy + 3, dx + w - 3, dy + eh - 5);
       canvas.drawText(this.headerFontPaint, items[i].title, dx + 6, dy + 16);
+    }
+    else if (e.type == 'text') {
+      canvas.drawText(this.fontPaint, items[i].title, dx + 3, dy + 13);
+      canvas.drawRect(this.textBgPaint, dx + 3, dy + 20, dx + w - 3, dy + eh - 5);
+      canvas.drawText(this.fontPaint, e.contextObject[e.attributeName], dx + 3 + 3, dy + 15 + 20);
+      e.activeArea.set(dx + 3, dy + 20, w - 6, eh - 20 - 5);
+      if (e.focus) {
+        canvas.drawRect(this.textBorderPaint, e.activeArea.x, e.activeArea.y, e.activeArea.x + e.activeArea.width, e.activeArea.y + e.activeArea.height);
+      }
     }
     else if (e.type == 'separator') {
       //do nothing
@@ -43569,6 +43679,8 @@ var Mat4 = geom.Mat4;
 var BoundingBox = geom.BoundingBox;
 var Triangle2D = geom.Triangle2D;
 var IO = sys.IO;
+var Config = require('../Config');
+var Platform = sys.Platform;
 
 function rayBoxIntersection(ray, bbox, t0, t1) {
   var tmin = 0
@@ -43643,19 +43755,16 @@ function LayersController(window, scene, camera) {
   this.dragScale = new Vec3();
   this.dragStartRotationAngle = 0;
 
-  this.loadLayers('data/layers.json');
+  this.loadLayers('layers.json');
 
   this.addEventHandlers();
 }
 
 LayersController.prototype.addEventHandlers = function() {
-  this.window.on('mouseMoved', function(e) {
-    if (!this.enabled) return ;
-    this.testHit(e);
-  }.bind(this));
-
   this.window.on('leftMouseDown', function(e) {
-    if (!this.enabled) return ;
+    console.log('LayerController.leftMouseDown', e);
+    if (e.handled || !this.enabled) return;
+    this.testHit(e);
     if (this.selectedLayer) {
       var ray = this.camera.getWorldRay(e.x, e.y, this.window.width, this.window.height);
       var hits = ray.hitTestPlane(this.selectedLayer.position, this.up);
@@ -43669,7 +43778,7 @@ LayersController.prototype.addEventHandlers = function() {
   }.bind(this));
 
   this.window.on('mouseDragged', function(e) {
-    if (!this.enabled) return ;
+    if (e.handled || !this.enabled) return;
     if (this.selectedLayer) {
       var ray = this.camera.getWorldRay(e.x, e.y, this.window.width, this.window.height);
       var hits = ray.hitTestPlane(this.selectedLayer.position, this.up);
@@ -43698,12 +43807,13 @@ LayersController.prototype.addEventHandlers = function() {
   }.bind(this));
 
   this.window.on('keyDown', function(e) {
+    if (e.handled) return;
     if (!this.enabled) return ;
     switch (e.str) {
       case '-': if (this.selectedLayer) this.selectedLayer.alpha = Math.max(0, this.selectedLayer.alpha - 0.1); break;
       case '=': if (this.selectedLayer) this.selectedLayer.alpha = Math.min(1, this.selectedLayer.alpha + 0.1); break;
-      case 'S': this.saveLayers('data/layers.json'); break;
-      case 'L': this.loadLayers('data/layers.json'); break;
+      case 'S': this.saveLayers('layers.json'); break;
+      case 'L': this.loadLayers('layers.json'); break;
     }
     switch (e.keyCode) {
       case 48: this.toggleCompactLayers()
@@ -43734,12 +43844,12 @@ LayersController.prototype.saveLayers = function(fileName) {
       };
     }
   });
-  IO.saveTextFile(fileName, JSON.stringify(data));
+  IO.saveTextFile(Config.dataPath + '/' + fileName, JSON.stringify(data));
 }
 
 LayersController.prototype.loadLayers = function(fileName) {
   console.log('LayersController.loadLayers ' + fileName)
-  IO.loadTextFile(fileName, function(dataStr) {
+  IO.loadTextFile(Config.dataPath + '/' + fileName, function(dataStr) {
     data = JSON.parse(dataStr);
     this.scene.forEach(function(drawable, i) {
       if (drawable instanceof Layer) {
@@ -43813,8 +43923,7 @@ LayersController.prototype.testHit = function(e) {
 }
 
 module.exports = LayersController;
-},{"./Layer":"/Users/vorg/Workspace/var-uccorganism/ucc-map/ucc/Layer.js","pex-geom":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-geom/index.js","pex-sys":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-sys/index.js"}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/ucc/NodeEditor.js":[function(require,module,exports){
-(function (__dirname){
+},{"../Config":"/Users/vorg/Workspace/var-uccorganism/ucc-map/Config.js","./Layer":"/Users/vorg/Workspace/var-uccorganism/ucc-map/ucc/Layer.js","pex-geom":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-geom/index.js","pex-sys":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-sys/index.js"}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/ucc/NodeEditor.js":[function(require,module,exports){
 var materials = require('pex-materials');
 var geom = require('pex-geom');
 var glu = require('pex-glu');
@@ -43838,6 +43947,7 @@ var Triangle2D = geom.Triangle2D;
 var TextLabel = require('../utils/TextLabel');
 var Config = require('../Config');
 var convertToClientFormat = require('./ClientFormatter');
+var Platform = sys.Platform;
 
 function prop(name) {
   return function(o) {
@@ -43896,9 +44006,15 @@ function NodesEditor(window, camera) {
   this.roomsGeometry = new Geometry({ vertices: true, colors: true, faces: true });
   this.roomsMesh = new Mesh(this.roomsGeometry, new ShowColors());
 
-  this.nodeRadius = 0.003;
-  var cube = new Cube(this.nodeRadius, 0.0005, this.nodeRadius)
-  cube.computeEdges()
+  this.nodeRadius = 0.002;
+  //var cube = new Cube(this.nodeRadius, 0.0005, this.nodeRadius)
+  var cubeVertices = [
+    new Vec3(-this.nodeRadius, 0.0005,-this.nodeRadius), new Vec3(-this.nodeRadius, 0.0005, this.nodeRadius),
+    new Vec3(-this.nodeRadius, 0.0005, this.nodeRadius), new Vec3( this.nodeRadius, 0.0005, this.nodeRadius),
+    new Vec3( this.nodeRadius, 0.0005, this.nodeRadius), new Vec3( this.nodeRadius, 0.0005,-this.nodeRadius),
+    new Vec3( this.nodeRadius, 0.0005,-this.nodeRadius), new Vec3(-this.nodeRadius, 0.0005,-this.nodeRadius)
+  ];
+  var cube = new Geometry({ vertices: cubeVertices });
   this.wireCube = new Mesh(cube, new SolidColor({color:this.normalColor}), { lines: true });
 
   this.hoverNode = null;
@@ -43906,7 +44022,7 @@ function NodesEditor(window, camera) {
   this.textLabels = [];
 
   this.addEventHanlders();
-  this.load(__dirname + '/../data/nodes.json');
+  this.load('nodes.json');
 }
 
 NodesEditor.prototype.serialize = function() {
@@ -43933,19 +44049,19 @@ NodesEditor.prototype.serialize = function() {
 
 NodesEditor.prototype.save = function(fileName) {
   var data = this.serialize();
-  var url = Platform.isPlask ? fileName : 'save.php?filename='+filename;
+  var url = Config.dataPath + '/' + (Platform.isPlask ? fileName : '../save.php?filename='+fileName);
   IO.saveTextFile(url, JSON.stringify(data));
 }
 
 NodesEditor.prototype.saveClient = function(fileName) {
   var data = convertToClientFormat(this.serialize());
-  var url = Platform.isPlask ? fileName : 'save.php?filename='+filename;
+  var url = Config.dataPath + '/' + (Platform.isPlask ? fileName : '../save.php?filename='+fileName);
   IO.saveTextFile(url, JSON.stringify(data));
 }
 
 NodesEditor.prototype.load = function(fileName) {
   var self = this;
-  IO.loadTextFile(fileName, function(data) {
+  IO.loadTextFile(Config.dataPath + '/' + fileName, function(data) {
     data = JSON.parse(data)
     self.nodes = data.nodes.map(function(nodeData) {
       return {
@@ -44122,8 +44238,8 @@ NodesEditor.prototype.addEventHanlders = function() {
   this.window.on('keyDown', function(e) {
     if (!this.enabled) return;
     switch (e.str) {
-      case 'S': this.save(__dirname + '/../data/nodes.json'); this.saveClient(__dirname + '/../data/nodes.client.json'); break;
-      case 'L': this.load(__dirname + '/../data/nodes.json'); break;
+      case 'S': this.save('nodes.json'); this.saveClient('nodes.client.json'); break;
+      case 'L': this.load('nodes.json'); break;
       case 'j': this.joinNodes(true); break;
       case 'J': this.joinNodes(false); break;
       case 'c': this.closeLoop(true); break;
@@ -44352,7 +44468,6 @@ NodesEditor.prototype.draw = function(camera) {
 
 
 module.exports = NodesEditor;
-}).call(this,"/ucc")
 },{"../Config":"/Users/vorg/Workspace/var-uccorganism/ucc-map/Config.js","../utils/TextLabel":"/Users/vorg/Workspace/var-uccorganism/ucc-map/utils/TextLabel.js","./ClientFormatter":"/Users/vorg/Workspace/var-uccorganism/ucc-map/ucc/ClientFormatter.js","pex-color":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-color/index.js","pex-gen":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-gen/index.js","pex-geom":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-geom/index.js","pex-glu":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-glu/index.js","pex-materials":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-materials/index.js","pex-sys":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-sys/index.js","ramda":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/ramda/ramda.js"}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/utils/Panner.js":[function(require,module,exports){
 var geom = require('pex-geom');
 var Vec2 = geom.Vec2;

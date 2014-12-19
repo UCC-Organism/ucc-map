@@ -8,6 +8,8 @@ var Mat4 = geom.Mat4;
 var BoundingBox = geom.BoundingBox;
 var Triangle2D = geom.Triangle2D;
 var IO = sys.IO;
+var Config = require('../Config');
+var Platform = sys.Platform;
 
 function rayBoxIntersection(ray, bbox, t0, t1) {
   var tmin = 0
@@ -82,19 +84,16 @@ function LayersController(window, scene, camera) {
   this.dragScale = new Vec3();
   this.dragStartRotationAngle = 0;
 
-  this.loadLayers('data/layers.json');
+  this.loadLayers('layers.json');
 
   this.addEventHandlers();
 }
 
 LayersController.prototype.addEventHandlers = function() {
-  this.window.on('mouseMoved', function(e) {
-    if (!this.enabled) return ;
-    this.testHit(e);
-  }.bind(this));
-
   this.window.on('leftMouseDown', function(e) {
-    if (!this.enabled) return ;
+    console.log('LayerController.leftMouseDown', e);
+    if (e.handled || !this.enabled) return;
+    this.testHit(e);
     if (this.selectedLayer) {
       var ray = this.camera.getWorldRay(e.x, e.y, this.window.width, this.window.height);
       var hits = ray.hitTestPlane(this.selectedLayer.position, this.up);
@@ -108,7 +107,7 @@ LayersController.prototype.addEventHandlers = function() {
   }.bind(this));
 
   this.window.on('mouseDragged', function(e) {
-    if (!this.enabled) return ;
+    if (e.handled || !this.enabled) return;
     if (this.selectedLayer) {
       var ray = this.camera.getWorldRay(e.x, e.y, this.window.width, this.window.height);
       var hits = ray.hitTestPlane(this.selectedLayer.position, this.up);
@@ -137,12 +136,13 @@ LayersController.prototype.addEventHandlers = function() {
   }.bind(this));
 
   this.window.on('keyDown', function(e) {
+    if (e.handled) return;
     if (!this.enabled) return ;
     switch (e.str) {
       case '-': if (this.selectedLayer) this.selectedLayer.alpha = Math.max(0, this.selectedLayer.alpha - 0.1); break;
       case '=': if (this.selectedLayer) this.selectedLayer.alpha = Math.min(1, this.selectedLayer.alpha + 0.1); break;
-      case 'S': this.saveLayers('data/layers.json'); break;
-      case 'L': this.loadLayers('data/layers.json'); break;
+      case 'S': this.saveLayers('layers.json'); break;
+      case 'L': this.loadLayers('layers.json'); break;
     }
     switch (e.keyCode) {
       case 48: this.toggleCompactLayers()
@@ -173,12 +173,12 @@ LayersController.prototype.saveLayers = function(fileName) {
       };
     }
   });
-  IO.saveTextFile(fileName, JSON.stringify(data));
+  IO.saveTextFile(Config.dataPath + '/' + fileName, JSON.stringify(data));
 }
 
 LayersController.prototype.loadLayers = function(fileName) {
   console.log('LayersController.loadLayers ' + fileName)
-  IO.loadTextFile(fileName, function(dataStr) {
+  IO.loadTextFile(Config.dataPath + '/' + fileName, function(dataStr) {
     data = JSON.parse(dataStr);
     this.scene.forEach(function(drawable, i) {
       if (drawable instanceof Layer) {

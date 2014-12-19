@@ -1,4 +1,4 @@
-var glu = require('pex-glu');
+  var glu = require('pex-glu');
 var geom = require('pex-geom');
 var color = require('pex-color');
 var sys = require('pex-sys');
@@ -20,6 +20,7 @@ var Window = sys.Window;
 var Platform = sys.Platform;
 var Cube = gen.Cube;
 var SolidColor = materials.SolidColor;
+var Time = sys.Time;
 
 var Layer = require('./ucc/Layer');
 var LayersController = require('./ucc/LayersController');
@@ -181,10 +182,19 @@ Window.create({
     this.on('keyDown', function(e) {
       switch (e.str) {
         case 'S':
-          this.gui.save(__dirname + '/data/settings.json');
+          //this.gui.save(__dirname + '/data/settings.json');
           break;
       }
     }.bind(this));
+
+    if (Platform.isBrowser) {
+      window.addEventListener('keydown', function(e) {
+        //capture backspace
+        if (e.keyCode == 8) {
+          e.preventDefault();
+        }
+      })
+    }
   },
   initKeyboard: function() {
     this.on('keyDown', function(e) {

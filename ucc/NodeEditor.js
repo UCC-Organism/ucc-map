@@ -21,6 +21,7 @@ var Triangle2D = geom.Triangle2D;
 var TextLabel = require('../utils/TextLabel');
 var Config = require('../Config');
 var convertToClientFormat = require('./ClientFormatter');
+var Platform = sys.Platform;
 
 function prop(name) {
   return function(o) {
@@ -79,9 +80,15 @@ function NodesEditor(window, camera) {
   this.roomsGeometry = new Geometry({ vertices: true, colors: true, faces: true });
   this.roomsMesh = new Mesh(this.roomsGeometry, new ShowColors());
 
-  this.nodeRadius = 0.003;
-  var cube = new Cube(this.nodeRadius, 0.0005, this.nodeRadius)
-  cube.computeEdges()
+  this.nodeRadius = 0.002;
+  //var cube = new Cube(this.nodeRadius, 0.0005, this.nodeRadius)
+  var cubeVertices = [
+    new Vec3(-this.nodeRadius, 0.0005,-this.nodeRadius), new Vec3(-this.nodeRadius, 0.0005, this.nodeRadius),
+    new Vec3(-this.nodeRadius, 0.0005, this.nodeRadius), new Vec3( this.nodeRadius, 0.0005, this.nodeRadius),
+    new Vec3( this.nodeRadius, 0.0005, this.nodeRadius), new Vec3( this.nodeRadius, 0.0005,-this.nodeRadius),
+    new Vec3( this.nodeRadius, 0.0005,-this.nodeRadius), new Vec3(-this.nodeRadius, 0.0005,-this.nodeRadius)
+  ];
+  var cube = new Geometry({ vertices: cubeVertices });
   this.wireCube = new Mesh(cube, new SolidColor({color:this.normalColor}), { lines: true });
 
   this.hoverNode = null;
@@ -89,7 +96,7 @@ function NodesEditor(window, camera) {
   this.textLabels = [];
 
   this.addEventHanlders();
-  this.load(__dirname + '/../data/nodes.json');
+  this.load('nodes.json');
 }
 
 NodesEditor.prototype.serialize = function() {
@@ -116,19 +123,19 @@ NodesEditor.prototype.serialize = function() {
 
 NodesEditor.prototype.save = function(fileName) {
   var data = this.serialize();
-  var url = Platform.isPlask ? fileName : 'save.php?filename='+filename;
+  var url = Config.dataPath + '/' + (Platform.isPlask ? fileName : '../save.php?filename='+fileName);
   IO.saveTextFile(url, JSON.stringify(data));
 }
 
 NodesEditor.prototype.saveClient = function(fileName) {
   var data = convertToClientFormat(this.serialize());
-  var url = Platform.isPlask ? fileName : 'save.php?filename='+filename;
+  var url = Config.dataPath + '/' + (Platform.isPlask ? fileName : '../save.php?filename='+fileName);
   IO.saveTextFile(url, JSON.stringify(data));
 }
 
 NodesEditor.prototype.load = function(fileName) {
   var self = this;
-  IO.loadTextFile(fileName, function(data) {
+  IO.loadTextFile(Config.dataPath + '/' + fileName, function(data) {
     data = JSON.parse(data)
     self.nodes = data.nodes.map(function(nodeData) {
       return {
@@ -305,8 +312,8 @@ NodesEditor.prototype.addEventHanlders = function() {
   this.window.on('keyDown', function(e) {
     if (!this.enabled) return;
     switch (e.str) {
-      case 'S': this.save(__dirname + '/../data/nodes.json'); this.saveClient(__dirname + '/../data/nodes.client.json'); break;
-      case 'L': this.load(__dirname + '/../data/nodes.json'); break;
+      case 'S': this.save('nodes.json'); this.saveClient('nodes.client.json'); break;
+      case 'L': this.load('nodes.json'); break;
       case 'j': this.joinNodes(true); break;
       case 'J': this.joinNodes(false); break;
       case 'c': this.closeLoop(true); break;
