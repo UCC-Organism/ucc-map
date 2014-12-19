@@ -70,6 +70,10 @@ TextLabel = (function() {
     if (text == null) {
       text = "";
     }
+    if (text === "undefined") {
+      text = "";
+    }
+    text = text.toUpperCase();
     this.text = text;
     this.mesh.position = this.position.dup();
     this.mesh.position.x -= text.length / 2 * this.fontSize * this.letterWidth;

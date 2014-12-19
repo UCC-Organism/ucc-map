@@ -91,7 +91,6 @@ function LayersController(window, scene, camera) {
 
 LayersController.prototype.addEventHandlers = function() {
   this.window.on('leftMouseDown', function(e) {
-    console.log('LayerController.leftMouseDown', e);
     if (e.handled || !this.enabled) return;
     this.testHit(e);
     if (this.selectedLayer) {

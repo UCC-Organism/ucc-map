@@ -53,7 +53,9 @@ class TextLabel
     ]
 
   setText: (text="") ->
-    @text = text;
+    if text == "undefined" then text = ""
+    text = text.toUpperCase()
+    @text = text
     @mesh.position = @position.dup()
     @mesh.position.x -= text.length / 2 * @fontSize * @letterWidth
     for i in [0...@maxLen]

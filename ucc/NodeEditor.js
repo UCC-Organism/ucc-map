@@ -322,6 +322,7 @@ NodesEditor.prototype.addEventHanlders = function() {
     }
     switch (e.keyCode) {
       case 51: this.deleteNodes(); break;
+      case 8: this.deleteNodes(); break;
     }
   }.bind(this));
 }
