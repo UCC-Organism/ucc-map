@@ -110,6 +110,8 @@ NodesEditor.prototype.serialize = function() {
       type: room.type,
       nodes: room.nodes.map(function(node) {
         return self.nodes.indexOf(node);
+      }).filter(function(i) {
+        return i != -1; //kill zombie nodes
       })
     }
   }
