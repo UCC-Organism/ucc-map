@@ -324,7 +324,6 @@ NodesEditor.prototype.addEventHanlders = function() {
     }
     switch (e.keyCode) {
       case 51: this.deleteNodes(); break; //del
-      case 8: this.deleteNodes(); break; //backspace
     }
   }.bind(this));
 }
