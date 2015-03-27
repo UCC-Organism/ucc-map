@@ -1,4 +1,4 @@
-  var glu = require('pex-glu');
+var glu = require('pex-glu');
 var geom = require('pex-geom');
 var color = require('pex-color');
 var sys = require('pex-sys');
