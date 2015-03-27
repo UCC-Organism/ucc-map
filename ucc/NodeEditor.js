@@ -323,8 +323,8 @@ NodesEditor.prototype.addEventHanlders = function() {
       case 'R': this.makeRoom(false); break;
     }
     switch (e.keyCode) {
-      case 51: this.deleteNodes(); break;
-      case 8: this.deleteNodes(); break;
+      case 51: this.deleteNodes(); break; //del
+      case 8: this.deleteNodes(); break; //backspace
     }
   }.bind(this));
 }
