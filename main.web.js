@@ -36,7 +36,7 @@ Config.dataPath = Platform.isBrowser ? 'data' : __dirname + '/data';
 module.exports = Config;
 }).call(this,"/")
 },{"pex-color":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-color/index.js","pex-sys":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/pex-sys/index.js"}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/lib/../main.js":[function(require,module,exports){
-  var glu = require('pex-glu');
+var glu = require('pex-glu');
 var geom = require('pex-geom');
 var color = require('pex-color');
 var sys = require('pex-sys');
@@ -3566,7 +3566,7 @@ function xor(a, b) {
 }
 }).call(this,require("buffer").Buffer)
 },{"buffer":"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/buffer/index.js"}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/crypto-browserify/node_modules/browserify-sign/aesid.json":[function(require,module,exports){
-module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={"2.16.840.1.101.3.4.1.1": "aes-128-ecb",
 "2.16.840.1.101.3.4.1.2": "aes-128-cbc",
 "2.16.840.1.101.3.4.1.3": "aes-128-ofb",
 "2.16.840.1.101.3.4.1.4": "aes-128-cfb",
@@ -11362,7 +11362,7 @@ if (typeof Object.create === 'function') {
 }
 
 },{}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/crypto-browserify/node_modules/browserify-sign/node_modules/elliptic/package.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "name": "elliptic",
   "version": "0.15.15",
   "description": "EC cryptography",
@@ -17611,7 +17611,7 @@ if (typeof Object.create === 'function') {
 }
 
 },{}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/crypto-browserify/node_modules/create-ecdh/node_modules/elliptic/package.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
   "name": "elliptic",
   "version": "0.15.15",
   "description": "EC cryptography",
@@ -20067,7 +20067,7 @@ if (typeof window === 'object') {
 }
 
 },{}],"/Users/vorg/Workspace/var-uccorganism/ucc-map/node_modules/browserify/node_modules/crypto-browserify/node_modules/diffie-hellman/primes.json":[function(require,module,exports){
-module.exports={
+module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports=module.exports={
     "modp1": {
         "gen": "02",
         "prime": "ffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec6f44c42e9a63a3620ffffffffffffffff"
@@ -44050,13 +44050,13 @@ NodesEditor.prototype.serialize = function() {
 NodesEditor.prototype.save = function(fileName) {
   var data = this.serialize();
   var url = Config.dataPath + '/' + (Platform.isPlask ? fileName : '../save.php?filename='+fileName);
-  IO.saveTextFile(url, JSON.stringify(data));
+  IO.saveTextFile(url, JSON.stringify(data, null, 2));
 }
 
 NodesEditor.prototype.saveClient = function(fileName) {
   var data = convertToClientFormat(this.serialize());
   var url = Config.dataPath + '/' + (Platform.isPlask ? fileName : '../save.php?filename='+fileName);
-  IO.saveTextFile(url, JSON.stringify(data));
+  IO.saveTextFile(url, JSON.stringify(data, null, 2));
 }
 
 NodesEditor.prototype.load = function(fileName) {
@@ -44247,7 +44247,7 @@ NodesEditor.prototype.addEventHanlders = function() {
       case 'R': this.makeRoom(false); break;
     }
     switch (e.keyCode) {
-      case 51: this.deleteNodes(); break; //del
+      case 117: this.deleteNodes(); break; //del
     }
   }.bind(this));
 }
