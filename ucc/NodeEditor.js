@@ -126,13 +126,13 @@ NodesEditor.prototype.serialize = function() {
 NodesEditor.prototype.save = function(fileName) {
   var data = this.serialize();
   var url = Config.dataPath + '/' + (Platform.isPlask ? fileName : '../save.php?filename='+fileName);
-  IO.saveTextFile(url, JSON.stringify(data));
+  IO.saveTextFile(url, JSON.stringify(data, null, 2));
 }
 
 NodesEditor.prototype.saveClient = function(fileName) {
   var data = convertToClientFormat(this.serialize());
   var url = Config.dataPath + '/' + (Platform.isPlask ? fileName : '../save.php?filename='+fileName);
-  IO.saveTextFile(url, JSON.stringify(data));
+  IO.saveTextFile(url, JSON.stringify(data, null, 2));
 }
 
 NodesEditor.prototype.load = function(fileName) {
