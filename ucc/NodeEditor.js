@@ -209,6 +209,9 @@ NodesEditor.prototype.addEventHanlders = function() {
       this.rooms.filter(prop('selected')).forEach(function(room) {
         if (room != this.hoverRoom) room.selected = false;
       }.bind(this));
+      selectedNodes.forEach(function(node) {
+        if (node != this.hoverNode) node.selected = false;
+      }.bind(this));
       this.hoverRoom.selected = !this.hoverRoom.selected;
       if (this.onRoomSelected) {
         this.onRoomSelected(this.hoverRoom.selected ? this.hoverRoom : null)
