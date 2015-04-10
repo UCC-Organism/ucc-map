@@ -22,6 +22,7 @@ var TextLabel = require('../utils/TextLabel');
 var Config = require('../Config');
 var convertToClientFormat = require('./ClientFormatter');
 var Platform = sys.Platform;
+var AddCircleExt = require('../geom/LineBuilderAddCircle');
 
 function prop(name) {
   return function(o) {
@@ -142,6 +143,9 @@ NodesEditor.prototype.load = function(fileName) {
     self.nodes = data.nodes.map(function(nodeData) {
       return {
         layerId: nodeData.layerId,
+        displacePoint: nodeData.displacePoint,
+        displaceRadius: Number(nodeData.displaceRadius),
+        displaceStrength: Number(nodeData.displaceStrength),
         position: new Vec3(nodeData.position.x, nodeData.position.y, nodeData.position.z),
         position2d: new Vec2(nodeData.position2d.x, nodeData.position2d.y)
       }
@@ -204,6 +208,9 @@ NodesEditor.prototype.addEventHanlders = function() {
       e.handled = true;
       this.cancelNextClick = true;
       this.draggedNode = null;
+      if (this.onNodeSelected) {
+        this.onNodeSelected(this.hoverNode.selected ? this.hoverNode : null)
+      }
     }
     else if (this.hoverRoom) {
       this.rooms.filter(prop('selected')).forEach(function(room) {
@@ -322,6 +329,8 @@ NodesEditor.prototype.addEventHanlders = function() {
       case 'j': this.joinNodes(true); break;
       case 'J': this.joinNodes(false); break;
       case 'c': this.closeLoop(true); break;
+      case 'd': this.makeDisplacePoint(true); break;
+      case 'D': this.makeDisplacePoint(false); break;
       case 'r': this.makeRoom(true); break;
       case 'R': this.makeRoom(false); break;
     }
@@ -441,6 +450,14 @@ NodesEditor.prototype.makeRoom = function(connect) {
   this.updateRoomsMesh();
 }
 
+NodesEditor.prototype.makeDisplacePoint = function(isOn) {
+  var selectedNodes = this.nodes.filter(function(node) { return node.selected; });
+  selectedNodes.forEach(function(node) {
+    node.displacePoint = isOn;
+  })
+  this.updateConnectionsMesh();
+}
+
 NodesEditor.prototype.updateConnectionsMesh = function() {
   this.lineBuilder.reset();
   var currentLayerConnections = this.connections.filter(function(connection) {
@@ -449,6 +466,12 @@ NodesEditor.prototype.updateConnectionsMesh = function() {
   currentLayerConnections.forEach(function(connection) {
     this.lineBuilder.addLine(connection.a.position, connection.b.position, this.normalColor);
   }.bind(this));
+
+  var visibleNodes = this.nodes.filter(this.isNodeVisible.bind(this) );
+  var displacePoints = R.filter(R.where({ displacePoint: true }), visibleNodes);
+  displacePoints.forEach(function(node) {
+    this.lineBuilder.addCircle(node.position, node.displaceRadius, 32, Color.Orange, 'x', 'z')
+  }.bind(this))
 }
 
 NodesEditor.prototype.updateRoomsMesh = function() {
@@ -509,7 +532,9 @@ NodesEditor.prototype.setCurrentLayer = function(layer) {
 }
 
 NodesEditor.prototype.isNodeVisible = function(node) {
-  return node && this.currentLayer.id == 0 || node.layerId == this.currentLayer.id;
+  if (!node) return false;
+  if (!this.currentLayer) return false;
+  return this.currentLayer.id == 0 || node.layerId == this.currentLayer.id;
 }
 
 NodesEditor.prototype.draw = function(camera) {

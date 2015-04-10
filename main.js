@@ -43,6 +43,9 @@ Window.create({
   selectedRoomId: 'N/A',
   selectedRoomType: 'N/A',
   selectedRoom: null,
+  selectedNode: null,
+  selectedNodeDisplaceRadius: 0,
+  selectedNodeDisplaceStrength: 0,
   init: function() {
     Time.verbose = true;
     //has to be here to capture events before others
@@ -178,6 +181,20 @@ Window.create({
         this.selectedRoomType = 'N/A';
       }
     }.bind(this));
+    this.gui.addHeader('Selected Node')
+    this.gui.addParam('Displace radius', this, 'selectedNodeDisplaceRadius', { min: 0, max: 0.5 }, function(e) {
+      if (this.selectedNode && this.selectedNode.displacePoint) {
+        this.selectedNode.displaceRadius = e;
+        this.nodeEditor.updateConnectionsMesh();
+      }
+    }.bind(this))
+
+    this.gui.addParam('Displace strength', this, 'selectedNodeDisplaceStrength', { min: 0, max: 0.5 }, function(e) {
+      if (this.selectedNode && this.selectedNode.displacePoint) {
+        this.selectedNode.displaceStrength = e;
+        this.nodeEditor.updateConnectionsMesh();
+      }
+    }.bind(this))
 
     this.on('keyDown', function(e) {
       switch (e.str) {
@@ -252,6 +269,19 @@ Window.create({
       }
       else {
         this.selectedRoomId = 'N/A';
+      }
+    }.bind(this);
+    this.nodeEditor.onNodeSelected = function(node) {
+      this.selectedNode = node;
+      if (node && node.displacePoint) {
+        this.selectedNodeDisplaceRadius = node.displaceRadius;
+        this.selectedNodeDisplaceStrength = node.displaceStrength;
+        this.gui.items[0].dirty = true;
+      }
+      else {
+        this.selectedNodeDisplaceRadius = 0;
+        this.selectedNodeDisplaceStrength = 0;
+        this.gui.items[0].dirty = true;
       }
     }.bind(this);
     this.camera.getTarget().setVec3(selectedLayer.position);
