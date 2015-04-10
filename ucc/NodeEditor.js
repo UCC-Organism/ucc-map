@@ -453,7 +453,7 @@ NodesEditor.prototype.makeRoom = function(connect) {
 NodesEditor.prototype.makeDisplacePoint = function(isOn) {
   var selectedNodes = this.nodes.filter(function(node) { return node.selected; });
   selectedNodes.forEach(function(node) {
-    node.displacePoint = isOn;
+    node.displacePoint = isOn ? true : false;
   })
   this.updateConnectionsMesh();
 }

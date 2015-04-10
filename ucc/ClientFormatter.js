@@ -6,13 +6,19 @@
   }
 
   var nodes = nodesData.nodes.map(function(node) {
-    return {
+    var data = {
       floor: node.layerId,
       room: '',
       //rotate not '90, for easier 3D -> 2D handling
       position: { x: node.position.x, y: node.position.z, z: node.position.y },
       neighbors: []
     }
+    if (node.displacePoint) {
+      data.displacePoint = node.displacePoint;
+      data.displaceRadius = node.displaceRadius;
+      data.displaceStrength = node.displaceStrength;
+    }
+    return data;
   });
 
   nodesData.connections.forEach(function(edge) {
@@ -45,7 +51,7 @@
   //remove free floating nodes
 
   var nodesToRemove = nodes.filter(function(node) {
-    if (node.neighbors.length == 0) {
+    if (node.neighbors.length == 0 && !node.displacePoint) {
       console.log('Invalid node', 'floor:' + node.floor, 'position:' + logVec3(node.position));
       return true;
     }
