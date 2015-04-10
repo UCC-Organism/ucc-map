@@ -23915,12 +23915,12 @@
     {
       "layerId": 7,
       "displacePoint": true,
-      "displaceRadius": 0.08767502029220779,
+      "displaceRadius": 0.2149705762987013,
       "displaceStrength": 0.08541751217532467,
       "position": {
-        "x": -0.16186270161930455,
+        "x": -0.1581908856318545,
         "y": 0.20350000000000001,
-        "z": 0.20334191269342464
+        "z": 0.22584629092904213
       },
       "position2d": {
         "x": -0.12117293420900005,
@@ -23931,12 +23931,12 @@
     {
       "layerId": 7,
       "displacePoint": true,
-      "displaceRadius": 0.09686992694805195,
+      "displaceRadius": 0.19423447646103897,
       "displaceStrength": 0.17665635146103897,
       "position": {
-        "x": -0.02195071789360263,
+        "x": -0.013430159880345627,
         "y": 0.20350000000000001,
-        "z": 0.4417925122696802
+        "z": 0.42280016017893596
       },
       "position2d": {
         "x": -0.10266434444124664,
@@ -23947,21 +23947,24 @@
     {
       "layerId": 7,
       "displacePoint": true,
-      "displaceRadius": 0.06786475243506493,
+      "displaceRadius": 0.22183187905844157,
       "displaceStrength": 0.15546367694805194,
       "position": {
-        "x": -0.3410726105314955,
+        "x": -0.3462657420328469,
         "y": 0.20350000000000001,
-        "z": 0.5018746111154884
+        "z": 0.500601791266617
       },
       "position2d": {
         "x": 0.15949210002014386,
         "y": 0.22273562613939638
       },
-      "selected": false
+      "selected": true
     },
     {
       "layerId": 6,
+      "displacePoint": true,
+      "displaceRadius": 0.21197747564935066,
+      "displaceStrength": 0.056057224025974024,
       "position": {
         "x": -0.0896733878390582,
         "y": 0.10299999999999998,
@@ -23970,20 +23973,12 @@
       "position2d": {
         "x": -0.09529342347506875,
         "y": -0.008642015408361903
-      },
-      "color": {
-        "r": 0,
-        "g": 1,
-        "b": 0,
-        "a": 1
-      },
-      "selected": false,
-      "displacePoint": true,
-      "displaceRadius": 0.21197747564935066,
-      "displaceStrength": 0.056057224025974024
+      }
     },
     {
       "layerId": 6,
+      "displaceRadius": 0,
+      "displaceStrength": 0,
       "position": {
         "x": -0.43609171575473177,
         "y": 0.10299999999999998,
@@ -23992,16 +23987,13 @@
       "position2d": {
         "x": -0.024349467579356632,
         "y": 0.33777631250731166
-      },
-      "color": {
-        "r": 0,
-        "g": 1,
-        "b": 0,
-        "a": 1
       }
     },
     {
       "layerId": 6,
+      "displacePoint": true,
+      "displaceRadius": 0.10297027191558442,
+      "displaceStrength": 0.049982244318181816,
       "position": {
         "x": 0.0006464785551494323,
         "y": 0.10299999999999998,
@@ -24010,20 +24002,13 @@
       "position2d": {
         "x": 0.14843967927927154,
         "y": -0.09896188180256954
-      },
-      "color": {
-        "r": 0,
-        "g": 1,
-        "b": 0,
-        "a": 1
-      },
-      "selected": false,
-      "displacePoint": true,
-      "displaceRadius": 0.10297027191558442,
-      "displaceStrength": 0.049982244318181816
+      }
     },
     {
       "layerId": 6,
+      "displacePoint": true,
+      "displaceRadius": 0.14387175324675325,
+      "displaceStrength": 0.032251927759740256,
       "position": {
         "x": -0.3405034782817955,
         "y": 0.10299999999999998,
@@ -24032,17 +24017,7 @@
       "position2d": {
         "x": 0.12121680132575624,
         "y": 0.2421880750343754
-      },
-      "color": {
-        "r": 0,
-        "g": 1,
-        "b": 0,
-        "a": 1
-      },
-      "selected": true,
-      "displacePoint": true,
-      "displaceRadius": 0.14387175324675325,
-      "displaceStrength": 0.032251927759740256
+      }
     }
   ],
   "connections": [
