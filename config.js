@@ -9,6 +9,7 @@ var Config = {
     { type: 'toilet'   , label: 'Toilet'   , color: '#0055DD', centerColor: '#0055DD', edgeColor: '#0055DD' },
     { type: 'research' , label: 'Research' , color: '#FF00FF', centerColor: '#FF00FF', edgeColor: '#FF00FF' },
     { type: 'admin'    , label: 'Admin'    , color: '#6666FF', centerColor: '#6666FF', edgeColor: '#6666FF' },
+    { type: 'teacher'  , label: 'Teacher'  , color: '#0000FF', centerColor: '#0000FF', edgeColor: '#0000FF' },
     { type: 'closet'   , label: 'Closet'   , color: '#996600', centerColor: '#996600', edgeColor: '#996600' },
     { type: 'food'     , label: 'Food'     , color: '#FFAA00', centerColor: '#FFAA00', edgeColor: '#FFAA00' },
     { type: 'knowledge', label: 'Knowledge', color: '#00DDAA', centerColor: '#00DDAA', edgeColor: '#00DDAA' },

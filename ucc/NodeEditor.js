@@ -284,6 +284,7 @@ NodesEditor.prototype.addEventHanlders = function() {
     var prevHoverRoom = this.hoverRoom;
     this.hoverRoom = false;
     this.rooms.forEach(function(room) {
+      if (!room.nodes[0]) return;
       if (room.nodes[0].layerId != this.currentLayer.id) return;
       var points2d = room.nodes.map(prop('position2d'));
       var center = centroid2D(points2d);
